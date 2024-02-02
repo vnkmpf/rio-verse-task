@@ -9,6 +9,8 @@ RUN apk -U add \
     && adduser -D dev \
     && rm -rf /tmp/*
 
+RUN docker-php-ext-install pdo_mysql
+
 USER dev
 
 FROM base AS dev
