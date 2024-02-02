@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  php:
+    build:
+      context: .
+    tty: true
+    volumes:
+      - ./:/app
+    working_dir: /app
+
+#  database:
