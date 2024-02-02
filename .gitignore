@@ -11,3 +11,4 @@
 ###< symfony/framework-bundle ###
 
 /compose.override.yaml
+/volumes/database_data/*
