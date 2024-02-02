@@ -4,9 +4,20 @@ services:
   php:
     build:
       context: .
+      target: dev
     tty: true
     volumes:
       - ./:/app
     working_dir: /app
 
-#  database:
+###> doctrine/doctrine-bundle ###
+  database:
+    image: mysql:${MYSQL_VERSION:-8.3}
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASS:-root}
+      MYSQL_DATABASE: ${MYSQL_DB:-booking}
+      MYSQL_USER: ${MYSQL_USER:-user}
+      MYSQL_PASSWORD: ${MYSQL_PASS:-user}
+    volumes:
+      - ./volumes/database_data:/var/lib/mysql:rw
+###< doctrine/doctrine-bundle ###
