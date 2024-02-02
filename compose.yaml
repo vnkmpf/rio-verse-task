@@ -9,6 +9,8 @@ services:
     volumes:
       - ./:/app
     working_dir: /app
+    networks:
+      - booking_net
 
 ###> doctrine/doctrine-bundle ###
   database:
@@ -21,3 +23,18 @@ services:
     volumes:
       - ./volumes/database_data:/var/lib/mysql:rw
 ###< doctrine/doctrine-bundle ###
+
+  caddy:
+    image: caddy:2.7.6-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./volumes/Caddyfile:/etc/caddy/Caddyfile
+      - ./public/:/app/public/
+    networks:
+      - booking_net
+
+networks:
+  booking_net:
+    driver: bridge

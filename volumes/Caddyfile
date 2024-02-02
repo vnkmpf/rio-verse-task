@@ -1,0 +1,8 @@
+:443, localhost, :80 {
+    root * /app/public/
+    encode gzip
+    php_fastcgi php:9000
+    file_server
+    header >X-Powered-By "😍"
+    header -Server
+}
