@@ -11,8 +11,8 @@ final class GetServiceTest extends WebTestCase
 {
     public static function setUpBeforeClass(): void
     {
-        passthru(sprintf(
-            'php "%s/../../../../../bin/console" doctrine:fixtures:load --env test --no-interaction --group=ServiceFixture',
+        shell_exec(sprintf(
+            'php "%s/../../../../../bin/console" doctrine:fixtures:load --env test --no-interaction --append --group=ServiceFixture',
             __DIR__,
         ));
     }

@@ -6,12 +6,14 @@ namespace App\Service\Application\Controller;
 
 use App\Service\Domain\Entity\Service;
 use App\Service\Domain\Repository\ServiceRepository;
+use App\User\Domain\Repository\UserRepository;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\UuidV7;
 
@@ -20,12 +22,23 @@ final class CreateService extends AbstractController
 {
     public function __construct(
         private readonly ServiceRepository $service_repository,
+        private readonly UserRepository $user_repository,
     ) {
     }
 
     public function __invoke(): Response
     {
+        $token = str_replace(
+            'token ',
+            '',
+            $this->container->get('request_stack')->getCurrentRequest()->headers->get('Authorization') ?? '',
+        );
+
         try {
+            if ($token === '') {
+                throw new UnauthorizedHttpException('');
+            }
+
             $post_data = $this->decodeJsonContent();
             $service = new Service(
                 new UuidV7(),
@@ -34,10 +47,10 @@ final class CreateService extends AbstractController
                 $post_data->capacity ?? throw new BadRequestHttpException('capacity'),
                 $post_data->description ?? throw new BadRequestHttpException('description'),
                 $post_data->cancellation_limit ?? throw new BadRequestHttpException('cancellation_limit'),
-                new UuidV7(),
+                $this->user_repository->getByToken($token)?->id ?? throw new UnauthorizedHttpException(''),
             );
             $this->service_repository->save($service);
-        } catch (\JsonException|BadRequestHttpException|\InvalidArgumentException $e) {
+        } catch (\Exception $e) {
             return $this->sendJsonProblem($e);
         }
 
@@ -77,6 +90,11 @@ final class CreateService extends AbstractController
                     'title' => 'Data constraint problem.',
                     'detail' => $exception->getMessage(),
                 ], 400, ['Content-Type' => 'application/problem+json']),
+            $exception instanceof UnauthorizedHttpException => new JsonResponse([
+                'type' => 'https://example.com/probs/unauthorized',
+                'title' => 'Unauthorized request.',
+                'detail' => 'Request not authorized.',
+            ], 401, ['Content-Type' => 'application/problem+json']),
         };
     }
 }

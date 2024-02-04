@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity repository-class="App\User\Infrastructure\Repository\UserRepository"
+            name="App\User\Domain\Entity\User"
+            table="user">
+        <id name="id" type="uuid" column="id" />
+        <field name="name" type="text" column="name" length="128" />
+        <field name="email" type="text" column="email" length="255" />
+        <field name="token" type="text" column="token" length="128" />
+    </entity>
+</doctrine-mapping>

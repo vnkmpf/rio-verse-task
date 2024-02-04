@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Service\Application\Controller;
 
+use DataFixtures\User\StaffFixture;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class MultiOperationTest extends WebTestCase
@@ -19,7 +20,10 @@ final class MultiOperationTest extends WebTestCase
                 "duration": 60,
                 "name": "Scuba diving"
             }
-            JSON
+            JSON,
+            server: [
+                'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::STAFF_TOKEN,
+            ],
         );
 
         $post_response = $client->getResponse();
@@ -30,7 +34,9 @@ final class MultiOperationTest extends WebTestCase
             JSON_THROW_ON_ERROR,
         )->id;
 
-        $client->request('GET', '/service/' . $created_uuid);
+        $client->request('GET', '/service/' . $created_uuid, server: [
+            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::STAFF_TOKEN,
+        ]);
         $response = $client->getResponse();
 
         static::assertSame(200, $response->getStatusCode());
