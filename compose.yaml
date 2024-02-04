@@ -22,6 +22,8 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASS:-user}
     volumes:
       - ./volumes/database_data:/var/lib/mysql:rw
+    networks:
+      - booking_net
 ###< doctrine/doctrine-bundle ###
 
   caddy:
