@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Application\Controller;
 
 use App\Service\Domain\Entity\Service;
+use App\Service\Domain\Repository\ServiceRepository;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,8 +18,9 @@ use Symfony\Component\Uid\UuidV7;
 #[Route('/services', methods: ['POST'])]
 final class CreateService extends AbstractController
 {
-    public function __construct()
-    {
+    public function __construct(
+        private readonly ServiceRepository $service_repository,
+    ) {
     }
 
     public function __invoke(): Response
@@ -34,6 +36,7 @@ final class CreateService extends AbstractController
                 $post_data->cancellation_limit ?? throw new BadRequestHttpException('cancellation_limit'),
                 new UuidV7(),
             );
+            $this->service_repository->save($service);
         } catch (\JsonException|BadRequestHttpException|\InvalidArgumentException $e) {
             return $this->sendJsonProblem($e);
         }

@@ -10,4 +10,6 @@ use Symfony\Component\Uid\Uuid;
 interface ServiceRepository
 {
     public function findById(Uuid $id): ?Service;
+
+    public function save(Service $service): Service;
 }

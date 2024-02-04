@@ -21,4 +21,12 @@ final class ServiceRepository extends ServiceEntityRepository implements \App\Se
     {
         return $this->find($id);
     }
+
+    #[\Override]
+    public function save(Service $service): Service
+    {
+        $this->getEntityManager()->persist($service);
+        $this->getEntityManager()->flush();
+        return $service;
+    }
 }
