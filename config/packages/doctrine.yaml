@@ -16,10 +16,10 @@ doctrine:
         auto_mapping: true
         mappings:
             App:
-                type: attribute
+                type: xml
                 is_bundle: false
-                dir: '%kernel.project_dir%/src/Entity'
-                prefix: 'App\Entity'
+                dir: '%kernel.project_dir%/src/Service/Infrastructure/OrmMapping'
+                prefix: 'App\Service\Domain\Entity'
                 alias: App
 
 when@test:

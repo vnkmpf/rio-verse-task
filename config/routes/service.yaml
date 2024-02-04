@@ -1,0 +1,5 @@
+user:
+  resource:
+    path: ../../src/Service/Application/Controller
+    namespace: App\Service\Application\Controller
+  type: attribute
