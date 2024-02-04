@@ -16,4 +16,7 @@ USER dev
 FROM base AS dev
 USER root
 RUN apk -U add less vim
+RUN apk -U add php83-dev g++ make linux-headers \
+    && pecl install xdebug \
+    && docker-php-ext-enable xdebug
 USER dev

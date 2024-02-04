@@ -22,7 +22,8 @@
         "allow-plugins": {
             "php-http/discovery": true,
             "symfony/flex": true,
-            "symfony/runtime": true
+            "symfony/runtime": true,
+            "infection/extension-installer": true
         },
         "audit": {
             "abandoned": "fail"
@@ -56,6 +57,7 @@
         "test:unit": "phpunit --color --testsuite unit",
         "code:format": "XDEBUG_MODE=off php-cs-fixer fix --config=.php-cs-fixer.dist.php",
         "qa:stan": "XDEBUG_MODE=off phpstan analyze -c phpstan.dist.neon",
+        "qa:mutation": "./vendor/bin/infection --show-mutations --only-covered",
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
@@ -79,6 +81,7 @@
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.5",
         "friendsofphp/php-cs-fixer": "^3.49",
+        "infection/infection": "^0.27.9",
         "phpstan/phpstan": "^1.10",
         "phpstan/phpstan-strict-rules": "^1.5",
         "phpunit/phpunit": "^10.5",
