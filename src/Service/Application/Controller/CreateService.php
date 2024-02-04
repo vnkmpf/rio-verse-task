@@ -10,6 +10,7 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
@@ -24,10 +25,10 @@ final class CreateService extends AbstractController
     ) {
     }
 
-    public function __invoke(): Response
+    public function __invoke(Request $request): Response
     {
         try {
-            $post_data = $this->decodeJsonContent();
+            $post_data = $this->decodeJsonContent($request);
             $service = new Service(
                 new UuidV7(),
                 $post_data->name ?? throw new BadRequestHttpException('name'),
@@ -35,7 +36,7 @@ final class CreateService extends AbstractController
                 $post_data->capacity ?? throw new BadRequestHttpException('capacity'),
                 $post_data->description ?? throw new BadRequestHttpException('description'),
                 $post_data->cancellation_limit ?? throw new BadRequestHttpException('cancellation_limit'),
-                new UuidV7($this->container->get('request_stack')->getCurrentRequest()->headers->get('X-user-id')),
+                new UuidV7($request->headers->get('X-user-id')),
             );
             $this->service_repository->save($service);
         } catch (\Exception $e) {
@@ -50,10 +51,10 @@ final class CreateService extends AbstractController
      * @throws ContainerExceptionInterface
      * @throws \JsonException
      */
-    private function decodeJsonContent(): object
+    private function decodeJsonContent(Request $request): object
     {
-        return json_decode(
-            $this->container->get('request_stack')->getCurrentRequest()?->getContent(),
+        return (object) json_decode(
+            $request->getContent(),
             false,
             512,
             JSON_THROW_ON_ERROR,
@@ -82,6 +83,11 @@ final class CreateService extends AbstractController
                 'type' => 'https://example.com/probs/unauthorized',
                 'title' => 'Unauthorized request.',
                 'detail' => 'Request not authorized.',
+            ], 401, ['Content-Type' => 'application/problem+json']),
+            default => new JsonResponse([
+                'type' => 'https://example.com/probs/whoops',
+                'title' => 'Something went wrong.',
+                'detail' => 'Something went wrong.',
             ], 401, ['Content-Type' => 'application/problem+json']),
         };
     }

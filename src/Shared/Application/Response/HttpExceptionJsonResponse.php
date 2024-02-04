@@ -38,6 +38,9 @@ final class HttpExceptionJsonResponse
         };
     }
 
+    /**
+     * @return array<string, string>
+     */
     private function getHeaders(HttpException $exception): array
     {
         return match (true) {

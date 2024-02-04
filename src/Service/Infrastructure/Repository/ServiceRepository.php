@@ -9,6 +9,9 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Uid\Uuid;
 
+/**
+ * @extends ServiceEntityRepository<Service>
+ */
 final class ServiceRepository extends ServiceEntityRepository implements \App\Service\Domain\Repository\ServiceRepository
 {
     public function __construct(ManagerRegistry $registry)

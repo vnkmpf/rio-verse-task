@@ -23,3 +23,7 @@
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
 /.phpunit.cache/test-results
+
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###
