@@ -31,7 +31,7 @@ if (($_ENV['TEST_SUITE'] ?? '') === 'integration') {
     ));
 
     passthru(sprintf(
-        'php "%s/../bin/console" doctrine:fixtures:load --env test --no-interaction',
+        'php "%s/../bin/console" doctrine:fixtures:load --env test --no-interaction --group everytime',
         __DIR__
     ));
 }

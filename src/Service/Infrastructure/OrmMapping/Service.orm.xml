@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity repository-class="App\Service\Infrastructure\Repository\ServiceRepository"
+            name="App\Service\Domain\Entity\Service"
+            table="service">
+        <id name="id" type="uuid" column="id" />
+        <field name="name" type="text" column="name" length="128" />
+        <field name="duration" type="integer" column="duration" /><!-- minutes -->
+        <field name="capacity" type="integer" column="capacity" />
+        <field name="description" type="text" column="description" />
+        <field name="cancellation_limit" type="integer" column="cancellation_limit" /><!-- minutes -->
+        <field name="staff" type="uuid" column="staff_id" />
+    </entity>
+</doctrine-mapping>
