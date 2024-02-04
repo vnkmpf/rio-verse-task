@@ -34,7 +34,7 @@ final class CreateService extends AbstractController
                 $post_data->cancellation_limit ?? throw new BadRequestHttpException('cancellation_limit'),
                 new UuidV7(),
             );
-        } catch (\JsonException|BadRequestHttpException $e) {
+        } catch (\JsonException|BadRequestHttpException|\InvalidArgumentException $e) {
             return $this->sendJsonProblem($e);
         }
 
@@ -68,6 +68,11 @@ final class CreateService extends AbstractController
                     'type' => 'https://example.com/probs/missing-data',
                     'title' => 'Missing required data.',
                     'detail' => sprintf('Missing data "%s".', $exception->getMessage()),
+                ], 400, ['Content-Type' => 'application/problem+json']),
+            $exception instanceof \InvalidArgumentException => new JsonResponse([
+                    'type' => 'https://example.com/probs/wrong-data',
+                    'title' => 'Data constraint problem.',
+                    'detail' => $exception->getMessage(),
                 ], 400, ['Content-Type' => 'application/problem+json']),
         };
     }
