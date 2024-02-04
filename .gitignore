@@ -12,3 +12,8 @@
 
 /compose.override.yaml
 /volumes/database_data/*
+
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+###< phpunit/phpunit ###
