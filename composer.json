@@ -53,6 +53,7 @@
     "scripts": {
         "pkgs:audit": "composer audit",
         "test:integration": "TEST_SUITE=integration vendor/bin/phpunit --color --testsuite integration",
+        "test:unit": "vendor/bin/phpunit --color --testsuite unit",
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd"

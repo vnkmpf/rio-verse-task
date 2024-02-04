@@ -17,5 +17,20 @@ final class Service
         public int $cancellation_limit, // (minutes)
         public Uuid $staff,
     ) {
+        if ($this->name === '') {
+            throw new \InvalidArgumentException('Name cannot be empty');
+        }
+
+        if ($this->cancellation_limit < 0) {
+            throw new \InvalidArgumentException('Cancellation limit cannot be negative');
+        }
+
+        if ($this->capacity < 1) {
+            throw new \InvalidArgumentException('Capacity has to be positive');
+        }
+
+        if ($this->duration < 1) {
+            throw new \InvalidArgumentException('Duration has to be positive');
+        }
     }
 }
