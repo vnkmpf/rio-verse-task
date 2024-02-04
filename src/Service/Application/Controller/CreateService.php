@@ -6,7 +6,6 @@ namespace App\Service\Application\Controller;
 
 use App\Service\Domain\Entity\Service;
 use App\Service\Domain\Repository\ServiceRepository;
-use App\User\Domain\Repository\UserRepository;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,23 +21,12 @@ final class CreateService extends AbstractController
 {
     public function __construct(
         private readonly ServiceRepository $service_repository,
-        private readonly UserRepository $user_repository,
     ) {
     }
 
     public function __invoke(): Response
     {
-        $token = str_replace(
-            'token ',
-            '',
-            $this->container->get('request_stack')->getCurrentRequest()->headers->get('Authorization') ?? '',
-        );
-
         try {
-            if ($token === '') {
-                throw new UnauthorizedHttpException('');
-            }
-
             $post_data = $this->decodeJsonContent();
             $service = new Service(
                 new UuidV7(),
@@ -47,7 +35,7 @@ final class CreateService extends AbstractController
                 $post_data->capacity ?? throw new BadRequestHttpException('capacity'),
                 $post_data->description ?? throw new BadRequestHttpException('description'),
                 $post_data->cancellation_limit ?? throw new BadRequestHttpException('cancellation_limit'),
-                $this->user_repository->getByToken($token)?->id ?? throw new UnauthorizedHttpException(''),
+                new UuidV7($this->container->get('request_stack')->getCurrentRequest()->headers->get('X-user-id')),
             );
             $this->service_repository->save($service);
         } catch (\Exception $e) {
