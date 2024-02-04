@@ -23,7 +23,15 @@ final class CreateService extends AbstractController
 
     public function __invoke(): Response
     {
-        $post_data = $this->decodeJsonContent();
+        try {
+            $post_data = $this->decodeJsonContent();
+        } catch (\JsonException) {
+            return new JsonResponse([
+                'type' => 'https://example.com/probs/wrong-data',
+                'title' => 'Invalid data format.',
+                'detail' => 'Request data is not valid JSON.',
+            ], 400, ['Content-Type' => 'application/problem+json']);
+        }
         $service = new Service(
             new UuidV7(),
             $post_data->name ?? throw new BadRequestHttpException('name'),
