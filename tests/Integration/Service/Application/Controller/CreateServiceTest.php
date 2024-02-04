@@ -33,7 +33,7 @@ final class CreateServiceTest extends WebTestCase
         static::assertUuid($created_service->id);
     }
 
-    public function testWrongDataSent(): void
+    public function testNonJsonDataSent(): void
     {
         $client = static::createClient();
         $client->request('POST', '/services', content: <<< TEXT
@@ -47,6 +47,27 @@ final class CreateServiceTest extends WebTestCase
         static::assertSame(400, $response->getStatusCode());
         static::assertSame('application/problem+json', $response->headers->get('Content-Type'));
         static::assertSame('Request data is not valid JSON.', $response_data->detail);
+    }
+
+    public function testMissingRequiredData(): void
+    {
+        $client = static::createClient();
+        $client->request('POST', '/services', content: <<< JSON
+            {
+                "cancellation_limit": 1440,
+                "capacity": 10,
+                "description": "Test",
+                "duration": 60
+            }
+            JSON
+        );
+
+        $response = $client->getResponse();
+        $response_data = json_decode($response->getContent(), false, 512, JSON_THROW_ON_ERROR);
+
+        static::assertSame(400, $response->getStatusCode());
+        static::assertSame('application/problem+json', $response->headers->get('Content-Type'));
+        static::assertSame('Missing data "name".', $response_data->detail);
     }
 
     private static function assertUuid(string $var): void

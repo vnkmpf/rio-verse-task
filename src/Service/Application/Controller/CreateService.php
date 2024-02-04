@@ -32,15 +32,23 @@ final class CreateService extends AbstractController
                 'detail' => 'Request data is not valid JSON.',
             ], 400, ['Content-Type' => 'application/problem+json']);
         }
-        $service = new Service(
-            new UuidV7(),
-            $post_data->name ?? throw new BadRequestHttpException('name'),
-            $post_data->duration ?? throw new BadRequestHttpException('duration'),
-        $post_data->capacity ?? throw new BadRequestHttpException('capacity'),
-            $post_data->description ?? throw new BadRequestHttpException('description'),
-            $post_data->cancellation_limit ?? throw new BadRequestHttpException('cancellation_limit'),
-            new UuidV7(),
-        );
+        try {
+            $service = new Service(
+                new UuidV7(),
+                $post_data->name ?? throw new BadRequestHttpException('name'),
+                $post_data->duration ?? throw new BadRequestHttpException('duration'),
+                $post_data->capacity ?? throw new BadRequestHttpException('capacity'),
+                $post_data->description ?? throw new BadRequestHttpException('description'),
+                $post_data->cancellation_limit ?? throw new BadRequestHttpException('cancellation_limit'),
+                new UuidV7(),
+            );
+        } catch (BadRequestHttpException $e) {
+            return new JsonResponse([
+                'type' => 'https://example.com/probs/missing-data',
+                'title' => 'Missing required data.',
+                'detail' => sprintf('Missing data "%s".', $e->getMessage()),
+            ], 400, ['Content-Type' => 'application/problem+json']);
+        }
 
         return new JsonResponse($service, 201);
     }
