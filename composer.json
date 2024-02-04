@@ -52,8 +52,10 @@
     },
     "scripts": {
         "pkgs:audit": "composer audit",
-        "test:integration": "TEST_SUITE=integration vendor/bin/phpunit --color --testsuite integration",
-        "test:unit": "vendor/bin/phpunit --color --testsuite unit",
+        "test:integration": "TEST_SUITE=integration phpunit --color --testsuite integration",
+        "test:unit": "phpunit --color --testsuite unit",
+        "code:format": "XDEBUG_MODE=off php-cs-fixer fix --config=.php-cs-fixer.dist.php",
+        "qa:stan": "XDEBUG_MODE=off phpstan analyze -c phpstan.dist.neon",
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
