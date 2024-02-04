@@ -22,6 +22,12 @@ final class GetService extends AbstractController
 
     public function __invoke(Uuid $id): Response
     {
-        return new JsonResponse($this->service_repository->findById($id), 200);
+        $service = $this->service_repository->findById($id);
+
+        if ($service === null) {
+            return new JsonResponse(sprintf('service "%s" not found', $id), 404);
+        }
+
+        return new JsonResponse($service, 200);
     }
 }
