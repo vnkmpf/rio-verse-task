@@ -25,14 +25,6 @@ final class CreateService extends AbstractController
     {
         try {
             $post_data = $this->decodeJsonContent();
-        } catch (\JsonException) {
-            return new JsonResponse([
-                'type' => 'https://example.com/probs/wrong-data',
-                'title' => 'Invalid data format.',
-                'detail' => 'Request data is not valid JSON.',
-            ], 400, ['Content-Type' => 'application/problem+json']);
-        }
-        try {
             $service = new Service(
                 new UuidV7(),
                 $post_data->name ?? throw new BadRequestHttpException('name'),
@@ -42,12 +34,8 @@ final class CreateService extends AbstractController
                 $post_data->cancellation_limit ?? throw new BadRequestHttpException('cancellation_limit'),
                 new UuidV7(),
             );
-        } catch (BadRequestHttpException $e) {
-            return new JsonResponse([
-                'type' => 'https://example.com/probs/missing-data',
-                'title' => 'Missing required data.',
-                'detail' => sprintf('Missing data "%s".', $e->getMessage()),
-            ], 400, ['Content-Type' => 'application/problem+json']);
+        } catch (\JsonException|BadRequestHttpException $e) {
+            return $this->sendJsonProblem($e);
         }
 
         return new JsonResponse($service, 201);
@@ -66,5 +54,21 @@ final class CreateService extends AbstractController
             512,
             JSON_THROW_ON_ERROR,
         );
+    }
+
+    private function sendJsonProblem(\Exception $exception): JsonResponse
+    {
+        return match (true) {
+            $exception instanceof \JsonException => new JsonResponse([
+                    'type' => 'https://example.com/probs/wrong-data',
+                    'title' => 'Invalid data format.',
+                    'detail' => 'Request data is not valid JSON.',
+                ], 400, ['Content-Type' => 'application/problem+json']),
+            $exception instanceof BadRequestHttpException => new JsonResponse([
+                    'type' => 'https://example.com/probs/missing-data',
+                    'title' => 'Missing required data.',
+                    'detail' => sprintf('Missing data "%s".', $exception->getMessage()),
+                ], 400, ['Content-Type' => 'application/problem+json']),
+        };
     }
 }
