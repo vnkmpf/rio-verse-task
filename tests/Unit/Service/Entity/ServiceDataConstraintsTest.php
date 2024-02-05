@@ -116,6 +116,22 @@ final class ServiceDataConstraintsTest extends TestCase
         );
     }
 
+    public function testStringDataIsNormalized(): void
+    {
+        $service = new Service(
+            $this->getUuid(),
+            "nam\u{0065}\u{0301}",
+            10,
+            1,
+            "d\u{0065}\u{0301}scription",
+            1,
+            $this->getUuid(),
+        );
+
+        static::assertSame("nam\u{00e9}", $service->name);
+        static::assertSame("d\u{00e9}scription", $service->description);
+    }
+
     private function getUuid(): Uuid
     {
         return new UuidV7();
