@@ -14,8 +14,12 @@ final class User
         public string $email, //(255)
         public string $token, //(128)
     ) {
-        $this->name = \Normalizer::normalize($this->name);
-        $this->email = \Normalizer::normalize($this->email);
-        $this->token = \Normalizer::normalize($this->token);
+        $this->name = \Normalizer::normalize(trim($this->name));
+        $this->email = \Normalizer::normalize(trim($this->email));
+        $this->token = \Normalizer::normalize(trim($this->token));
+
+        if (false === filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
+            throw new \InvalidArgumentException('invalid email address');
+        }
     }
 }

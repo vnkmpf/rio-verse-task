@@ -132,6 +132,22 @@ final class ServiceDataConstraintsTest extends TestCase
         static::assertSame("d\u{00e9}scription", $service->description);
     }
 
+    public function testStringsAreTrimmed(): void
+    {
+        $service = new Service(
+            $this->getUuid(),
+            ' name ',
+            10,
+            1,
+            ' desc ',
+            1,
+            $this->getUuid(),
+        );
+
+        static::assertSame('name', $service->name);
+        static::assertSame('desc', $service->description);
+    }
+
     private function getUuid(): Uuid
     {
         return new UuidV7();

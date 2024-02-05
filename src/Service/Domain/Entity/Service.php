@@ -17,8 +17,15 @@ final class Service
         public int $cancellation_limit, // (minutes)
         public Uuid $staff,
     ) {
-        $this->name = \Normalizer::normalize($this->name, \Normalizer::NFC);
-        $this->description = \Normalizer::normalize($this->description, \Normalizer::NFC);
+        $this->name = \Normalizer::normalize(
+            trim($this->name),
+            \Normalizer::NFC,
+        );
+
+        $this->description = \Normalizer::normalize(
+            trim($this->description),
+            \Normalizer::NFC,
+        );
 
         if ($this->name === '') {
             throw new \InvalidArgumentException('Name cannot be empty');
