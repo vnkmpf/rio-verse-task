@@ -34,3 +34,5 @@ phpstan.neon
 ###< friendsofphp/php-cs-fixer ###
 /volumes/bash_history
 /phpmetrics/
+coverage
+.phpunit.cache/code-coverage

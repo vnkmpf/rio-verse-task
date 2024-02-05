@@ -59,6 +59,7 @@
         "pkgs:licenses": "XDEBUG_MODE=off ./vendor/bin/composer-license-checker",
         "pkgs:require-checker": "XDEBUG_MODE=off ./vendor/bin/composer-require-checker check",
         "pkgs:unused": "XDEBUG_MODE=off ./vendor/bin/composer-unused --excludePackage=symfony/yaml --excludePackage=symfony/flex --excludePackage=symfony/runtime --excludePackage=symfony/dotenv --excludePackage=doctrine/doctrine-migrations-bundle",
+        "test:coverage": "TEST_SUITE=integration XDEBUG_MODE=coverage phpunit -d memory_limit=4G --coverage-html coverage --coverage-filter src",
         "test:integration": "XDEBUG_MODE=off TEST_SUITE=integration phpunit --color --testsuite integration",
         "test:unit": "XDEBUG_MODE=off phpunit --color --testsuite unit",
         "code:format": "XDEBUG_MODE=off php-cs-fixer fix --config=.php-cs-fixer.dist.php",
