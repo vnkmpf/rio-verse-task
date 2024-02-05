@@ -33,3 +33,4 @@ phpstan.neon
 /.php-cs-fixer.cache
 ###< friendsofphp/php-cs-fixer ###
 /volumes/bash_history
+/phpmetrics/
