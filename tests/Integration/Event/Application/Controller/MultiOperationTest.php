@@ -18,7 +18,7 @@ final class MultiOperationTest extends WebTestCase
             {
                 "start": 480,
                 "end": 540,
-                "date": "2000-12-31",
+                "date": "2100-12-31",
                 "service_id": "{$service_uuid}"
             }
             JSON,
@@ -44,7 +44,7 @@ final class MultiOperationTest extends WebTestCase
         static::assertSame(200, $response->getStatusCode());
         static::assertSame(480, $created_service->start);
         static::assertSame(540, $created_service->end);
-        static::assertSame('2000-12-31', $created_service->date);
+        static::assertSame('2100-12-31', $created_service->date);
         static::assertSame($service_uuid, $created_service->service_id);
     }
 }

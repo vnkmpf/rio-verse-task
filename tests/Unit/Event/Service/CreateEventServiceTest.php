@@ -1,0 +1,75 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tests\Unit\Event\Service;
+
+use App\Event\Application\Service\EventService;
+use App\Event\Domain\Entity\Event;
+use App\Event\Domain\EventStatus;
+use App\Event\Domain\Repository\EventRepository;
+use App\Shared\DataType\DateImmutable;
+use App\Shared\Infrastructure\SystemTimeProvider;
+use App\Shared\Infrastructure\TimeProvider;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Uid\UuidV7;
+
+final class CreateEventServiceTest extends TestCase
+{
+    public function testStoreEvent(): void
+    {
+        $event = $this->getEvent();
+        $repository = $this->getRepository();
+        $service = new EventService($repository, new SystemTimeProvider());
+
+        $service->store($event);
+
+        static::assertNotEmpty($repository->data);
+    }
+
+    public function testCannotStoreInThePast(): void
+    {
+        $time_provider = $this->createStub(TimeProvider::class);
+        $time_provider->method('now')->willReturn(
+            new \DateTimeImmutable('2000-01-01'),
+        );
+        $event = $this->getEvent('1999-12-31');
+        $repository = $this->getRepository();
+        $service = new EventService($repository, $time_provider);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $service->store($event);
+    }
+
+    private function getRepository(): EventRepository
+    {
+        return new class() implements EventRepository {
+            /** @var Event[] */
+            public array $data = [];
+
+            #[\Override] public function getById(Uuid $id): ?Event
+            {
+                return $this->data[$id->toRfc4122()] ?? null;
+            }
+
+            #[\Override] public function store(Event $event): Event
+            {
+                $this->data[$event->id->toRfc4122()] = $event;
+                return $event;
+            }
+        };
+    }
+
+    private function getEvent(string $time = '2100-05-30'): Event
+    {
+        return new Event(
+            new UuidV7(),
+            480,
+            640,
+            new DateImmutable($time),
+            new UuidV7(),
+            EventStatus::ACTIVE,
+        );
+    }
+}
