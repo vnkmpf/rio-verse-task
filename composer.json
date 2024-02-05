@@ -2,11 +2,10 @@
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "stable",
+    "name": "tz/reservio-task",
     "prefer-stable": true,
     "require": {
         "php": ">=8.3",
-        "ext-ctype": "*",
-        "ext-iconv": "*",
         "ext-json": "*",
         "doctrine/doctrine-bundle": "^2.11",
         "doctrine/doctrine-migrations-bundle": "^3.3",
@@ -59,6 +58,7 @@
         "pkgs:audit": "composer audit",
         "pkgs:licenses": "./vendor/bin/composer-license-checker",
         "pkgs:require-checker": "./vendor/bin/composer-require-checker check",
+        "pkgs:unused": "./vendor/bin/composer-unused --excludePackage=symfony/yaml --excludePackage=symfony/flex --excludePackage=symfony/runtime --excludePackage=symfony/dotenv --excludePackage=doctrine/doctrine-migrations-bundle",
         "test:integration": "TEST_SUITE=integration phpunit --color --testsuite integration",
         "test:unit": "phpunit --color --testsuite unit",
         "code:format": "XDEBUG_MODE=off php-cs-fixer fix --config=.php-cs-fixer.dist.php",
@@ -87,6 +87,7 @@
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.5",
         "friendsofphp/php-cs-fixer": "^3.49",
+        "icanhazstring/composer-unused": "^0.8.11",
         "infection/infection": "^0.27.9",
         "lendable/composer-license-checker": "^1.1",
         "maglnet/composer-require-checker": "^4.8",
