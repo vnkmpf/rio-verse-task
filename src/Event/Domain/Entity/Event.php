@@ -22,5 +22,20 @@ final class Event
         public Uuid $service_id,
         public EventStatus $status,
     ) {
+        if ($this->start < 0) {
+            throw new \InvalidArgumentException('Start cannot be negative');
+        }
+
+        if ($this->start >= 1440) {
+            throw new \InvalidArgumentException('Start cannot be outside current date');
+        }
+
+        if ($this->end <= $this->start) {
+            throw new \InvalidArgumentException('End cannot be before or at the same time as start');
+        }
+
+        if ($this->end >= 1440) {
+            throw new \InvalidArgumentException('End cannot be outside current date');
+        }
     }
 }
