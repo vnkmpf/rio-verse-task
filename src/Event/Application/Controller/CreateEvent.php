@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\UuidV7;
 
@@ -27,16 +28,20 @@ final class CreateEvent extends AbstractController
 
     public function __invoke(Request $request): Response
     {
-        $post_data = $this->decodeJsonContent($request);
-        $event = new Event(
-            new UuidV7(),
-            $post_data->start,
-            $post_data->end,
-            new DateImmutable($post_data->date),
-            new UuidV7($post_data->service_id),
-            EventStatus::ACTIVE,
-        );
-        $this->event_repository->store($event);
+        try {
+            $post_data = $this->decodeJsonContent($request);
+            $event = new Event(
+                new UuidV7(),
+                $post_data->start ?? throw new BadRequestHttpException('start'),
+                $post_data->end ?? throw new BadRequestHttpException('end'),
+                new DateImmutable($post_data->date ?? throw new BadRequestHttpException('date')),
+                new UuidV7($post_data->service_id ?? throw new BadRequestHttpException('service_id')),
+                EventStatus::ACTIVE,
+            );
+            $this->event_repository->store($event);
+        } catch (\Exception $e) {
+            return $this->sendJsonProblem($e);
+        }
 
         return new JsonResponse($event, 201);
     }
@@ -54,5 +59,26 @@ final class CreateEvent extends AbstractController
             512,
             JSON_THROW_ON_ERROR,
         );
+    }
+
+    private function sendJsonProblem(\Exception $exception): JsonResponse
+    {
+        return match (true) {
+            $exception instanceof \JsonException => new JsonResponse([
+                'type' => 'https://example.com/probs/wrong-data',
+                'title' => 'Invalid data format.',
+                'detail' => 'Request data is not valid JSON.',
+            ], 400, ['Content-Type' => 'application/problem+json']),
+            $exception instanceof BadRequestHttpException => new JsonResponse([
+                'type' => 'https://example.com/probs/missing-data',
+                'title' => 'Missing required data.',
+                'detail' => sprintf('Missing data "%s".', $exception->getMessage()),
+            ], 400, ['Content-Type' => 'application/problem+json']),
+            default => new JsonResponse([
+                'type' => 'https://example.com/probs/whoops',
+                'title' => 'Something went wrong.',
+                'detail' => 'Something went wrong.',
+            ], 500, ['Content-Type' => 'application/problem+json']),
+        };
     }
 }

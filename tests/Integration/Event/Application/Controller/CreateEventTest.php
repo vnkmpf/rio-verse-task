@@ -37,6 +37,38 @@ final class CreateEventTest extends WebTestCase
         static::assertUuid($created_service->id);
     }
 
+    public function testTryingToCreateEventWithoutData(): void
+    {
+        $client = static::createClient(server: [
+            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::STAFF_TOKEN,
+        ]);
+        $client->request('POST', '/events');
+        $response = $client->getResponse();
+        $created_service = json_decode($response->getContent(), false, 512, JSON_THROW_ON_ERROR);
+
+        static::assertSame(400, $response->getStatusCode());
+    }
+
+    public function testTryingToCreateEventWithMissingData(): void
+    {
+        $client = static::createClient(server: [
+            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::STAFF_TOKEN,
+        ]);
+        $client->request('POST', '/events', content: <<< JSON
+            {
+                "start": 480,
+                "end": 540,
+                "date": "2000-12-31"
+            }
+            JSON
+        );
+        $response = $client->getResponse();
+        $response_content = json_decode($response->getContent(), false, 512, JSON_THROW_ON_ERROR);
+
+        static::assertSame(400, $response->getStatusCode());
+        static::assertSame('Missing required data.', $response_content->title);
+    }
+
     private static function assertUuid(string $var): void
     {
         static::assertMatchesRegularExpression(
