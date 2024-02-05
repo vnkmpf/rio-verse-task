@@ -56,15 +56,15 @@
     },
     "scripts": {
         "pkgs:audit": "composer audit",
-        "pkgs:licenses": "./vendor/bin/composer-license-checker",
-        "pkgs:require-checker": "./vendor/bin/composer-require-checker check",
-        "pkgs:unused": "./vendor/bin/composer-unused --excludePackage=symfony/yaml --excludePackage=symfony/flex --excludePackage=symfony/runtime --excludePackage=symfony/dotenv --excludePackage=doctrine/doctrine-migrations-bundle",
-        "test:integration": "TEST_SUITE=integration phpunit --color --testsuite integration",
-        "test:unit": "phpunit --color --testsuite unit",
+        "pkgs:licenses": "XDEBUG_MODE=off ./vendor/bin/composer-license-checker",
+        "pkgs:require-checker": "XDEBUG_MODE=off ./vendor/bin/composer-require-checker check",
+        "pkgs:unused": "XDEBUG_MODE=off ./vendor/bin/composer-unused --excludePackage=symfony/yaml --excludePackage=symfony/flex --excludePackage=symfony/runtime --excludePackage=symfony/dotenv --excludePackage=doctrine/doctrine-migrations-bundle",
+        "test:integration": "XDEBUG_MODE=off TEST_SUITE=integration phpunit --color --testsuite integration",
+        "test:unit": "XDEBUG_MODE=off phpunit --color --testsuite unit",
         "code:format": "XDEBUG_MODE=off php-cs-fixer fix --config=.php-cs-fixer.dist.php",
         "qa:stan": "XDEBUG_MODE=off phpstan analyze -c phpstan.dist.neon",
         "qa:mutation": "./vendor/bin/infection --show-mutations --only-covered",
-        "qa:metrics": "./vendor/bin/phpmetrics --config=.phpmetrics.json &>/dev/null",
+        "qa:metrics": "XDEBUG_MODE=off ./vendor/bin/phpmetrics --config=.phpmetrics.json &>/dev/null",
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
