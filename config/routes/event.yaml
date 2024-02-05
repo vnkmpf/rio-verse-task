@@ -1,0 +1,5 @@
+event:
+  resource:
+    path: ../../src/Event/Application/Controller
+    namespace: App\Event\Application\Controller
+  type: attribute
