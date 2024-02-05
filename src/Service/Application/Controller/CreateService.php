@@ -31,10 +31,10 @@ final class CreateService extends AbstractController
             $post_data = $this->decodeJsonContent($request);
             $service = new Service(
                 new UuidV7(),
-                \Normalizer::normalize($post_data->name ?? throw new BadRequestHttpException('name'), \Normalizer::NFC),
+                $post_data->name ?? throw new BadRequestHttpException('name'),
                 $post_data->duration ?? throw new BadRequestHttpException('duration'),
                 $post_data->capacity ?? throw new BadRequestHttpException('capacity'),
-                \Normalizer::normalize($post_data->description ?? throw new BadRequestHttpException('description'), \Normalizer::NFC),
+                $post_data->description ?? throw new BadRequestHttpException('description'),
                 $post_data->cancellation_limit ?? throw new BadRequestHttpException('cancellation_limit'),
                 new UuidV7($request->headers->get('X-user-id')),
             );

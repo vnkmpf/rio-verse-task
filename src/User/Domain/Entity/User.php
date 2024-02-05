@@ -14,5 +14,8 @@ final class User
         public string $email, //(255)
         public string $token, //(128)
     ) {
+        $this->name = \Normalizer::normalize($this->name);
+        $this->email = \Normalizer::normalize($this->email);
+        $this->token = \Normalizer::normalize($this->token);
     }
 }
