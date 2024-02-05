@@ -6,6 +6,7 @@ namespace App\Event\Application\Controller;
 
 use App\Event\Domain\Entity\Event;
 use App\Event\Domain\EventStatus;
+use App\Event\Domain\Repository\EventRepository;
 use App\Shared\DataType\DateImmutable;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -19,6 +20,11 @@ use Symfony\Component\Uid\UuidV7;
 #[Route('/events', methods: ['POST'])]
 final class CreateEvent extends AbstractController
 {
+    public function __construct(
+        private readonly EventRepository $event_repository,
+    ) {
+    }
+
     public function __invoke(Request $request): Response
     {
         $post_data = $this->decodeJsonContent($request);
@@ -30,6 +36,8 @@ final class CreateEvent extends AbstractController
             new UuidV7($post_data->service_id),
             EventStatus::ACTIVE,
         );
+        $this->event_repository->store($event);
+
         return new JsonResponse($event, 201);
     }
 

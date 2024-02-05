@@ -24,4 +24,13 @@ final class EventRepository extends ServiceEntityRepository implements \App\Even
     {
         return $this->find($id);
     }
+
+    #[\Override]
+    public function store(Event $event): Event
+    {
+        $this->getEntityManager()->persist($event);
+        $this->getEntityManager()->flush();
+
+        return $event;
+    }
 }

@@ -10,4 +10,6 @@ use Symfony\Component\Uid\Uuid;
 interface EventRepository
 {
     public function getById(Uuid $id): ?Event;
+
+    public function store(Event $event): Event;
 }
