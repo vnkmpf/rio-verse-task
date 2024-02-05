@@ -6,8 +6,10 @@
     "prefer-stable": true,
     "require": {
         "php": ">=8.3",
+        "ext-filter": "*",
         "ext-intl": "*",
         "ext-json": "*",
+        "doctrine/dbal": "^4.0",
         "doctrine/doctrine-bundle": "^2.11",
         "doctrine/doctrine-migrations-bundle": "^3.3",
         "doctrine/persistence": "^3.2",
