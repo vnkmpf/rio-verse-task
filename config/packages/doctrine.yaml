@@ -7,6 +7,9 @@ doctrine:
         #server_version: '16'
 
         profiling_collect_backtrace: '%kernel.debug%'
+        types:
+            date_immutable: App\Shared\DataType\DateImmutableDoctrine
+            event_status: App\Shared\DataType\EventStatusDoctrine
     orm:
         auto_generate_proxy_classes: true
         enable_lazy_ghost_objects: true
@@ -27,6 +30,12 @@ doctrine:
                 dir: '%kernel.project_dir%/src/User/Infrastructure/OrmMapping'
                 prefix: 'App\User\Domain\Entity'
                 alias: User
+            Event:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Event/Infrastructure/OrmMapping'
+                prefix: 'App\Event\Domain\Entity'
+                alias: Event
 
 when@test:
     doctrine:
