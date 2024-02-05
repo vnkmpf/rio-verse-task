@@ -1,3 +1,8 @@
+includes:
+    # https://github.com/phpstan/phpstan-strict-rules
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
+    - phpstan-strict-rules.dist.neon
+
 parameters:
     level: max
     paths:
