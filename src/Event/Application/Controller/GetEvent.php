@@ -23,6 +23,11 @@ final class GetEvent extends AbstractController
     public function __invoke(Uuid $id): Response
     {
         $event = $this->event_repository->getById($id);
+
+        if ($event === null) {
+            return new JsonResponse(sprintf('Event "%s" not found.', $id), 404);
+        }
+
         return new JsonResponse($event, 200);
     }
 }

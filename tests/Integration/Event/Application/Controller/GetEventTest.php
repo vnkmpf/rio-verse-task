@@ -31,4 +31,15 @@ final class GetEventTest extends WebTestCase
             $response->getContent(),
         );
     }
+
+    public function testTryingToGetNonExistingEvent(): void
+    {
+        $client = static::createClient(server: [
+            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::STAFF_TOKEN,
+        ]);
+        $client->request('GET', '/event/018d7b37-8c6c-7d36-93e4-0326b84016e8');
+        $response = $client->getResponse();
+
+        static::assertSame(404, $response->getStatusCode());
+    }
 }
