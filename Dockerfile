@@ -19,4 +19,6 @@ RUN apk -U add less vim
 RUN apk -U add php83-dev g++ make linux-headers \
     && pecl install xdebug \
     && docker-php-ext-enable xdebug
+RUN apk -U add icu-dev \
+    && docker-php-ext-install intl
 USER dev

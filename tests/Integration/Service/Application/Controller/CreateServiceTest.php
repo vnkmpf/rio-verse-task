@@ -169,6 +169,28 @@ final class CreateServiceTest extends WebTestCase
         static::assertSame('Request not authorized.', $response_data->detail);
     }
 
+    public function testStringsAreUnicodeNormalized(): void
+    {
+        $client = static::createClient(server: [
+            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::STAFF_TOKEN,
+        ]);
+        $client->request('POST', '/services', content: <<<JSON
+            {
+                "cancellation_limit": 1440,
+                "capacity": 10,
+                "description": "T\\u0065\\u0301st",
+                "duration": 60,
+                "name": "Scuba diving \\u0065\\u0301"
+            }
+            JSON,
+        );
+        $response = $client->getResponse();
+        $created_service = json_decode($response->getContent(), false, 512, JSON_THROW_ON_ERROR);
+
+        static::assertSame("T\u{00e9}st", $created_service->description);
+        static::assertSame("Scuba diving \u{00e9}", $created_service->name);
+    }
+
     private static function assertUuid(string $var): void
     {
         static::assertMatchesRegularExpression(

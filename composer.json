@@ -6,6 +6,7 @@
     "prefer-stable": true,
     "require": {
         "php": ">=8.3",
+        "ext-intl": "*",
         "ext-json": "*",
         "doctrine/doctrine-bundle": "^2.11",
         "doctrine/doctrine-migrations-bundle": "^3.3",
