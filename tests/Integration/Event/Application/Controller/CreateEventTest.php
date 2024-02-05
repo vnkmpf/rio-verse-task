@@ -69,6 +69,28 @@ final class CreateEventTest extends WebTestCase
         static::assertSame('Missing required data.', $response_content->title);
     }
 
+    public function testInvalidDataConstraint(): void
+    {
+        $service_uuid = ServiceFixture::SERVICE_UUID;
+        $client = static::createClient(server: [
+            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::STAFF_TOKEN,
+        ]);
+        $client->request('POST', '/events', content: <<< JSON
+            {
+                "start": -480,
+                "end": 540,
+                "date": "2000-12-31",
+                "service_id": "{$service_uuid}"
+            }
+            JSON
+        );
+        $response = $client->getResponse();
+        $response_content = json_decode($response->getContent(), false, 512, JSON_THROW_ON_ERROR);
+
+        static::assertSame(400, $response->getStatusCode());
+        static::assertSame('Data constraint problem.', $response_content->title);
+    }
+
     private static function assertUuid(string $var): void
     {
         static::assertMatchesRegularExpression(

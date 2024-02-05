@@ -74,6 +74,11 @@ final class CreateEvent extends AbstractController
                 'title' => 'Missing required data.',
                 'detail' => sprintf('Missing data "%s".', $exception->getMessage()),
             ], 400, ['Content-Type' => 'application/problem+json']),
+            $exception instanceof \InvalidArgumentException => new JsonResponse([
+                'type' => 'https://example.com/probs/wrong-data',
+                'title' => 'Data constraint problem.',
+                'detail' => $exception->getMessage(),
+            ], 400, ['Content-Type' => 'application/problem+json']),
             default => new JsonResponse([
                 'type' => 'https://example.com/probs/whoops',
                 'title' => 'Something went wrong.',
