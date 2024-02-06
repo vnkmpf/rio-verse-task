@@ -7,6 +7,7 @@ namespace App\Event\Application\Service;
 use App\Event\Domain\Entity\Event;
 use App\Event\Domain\Repository\EventRepository;
 use App\Shared\Infrastructure\TimeProvider;
+use Symfony\Component\Uid\Uuid;
 
 final class EventService
 {
@@ -25,8 +26,13 @@ final class EventService
         return $this->event_repository->store($event);
     }
 
-    public function delete(\Symfony\Component\Uid\Uuid $id): void
+    public function delete(Event $event): void
     {
-        $this->event_repository->deleteById($id);
+        $this->event_repository->delete($event);
+    }
+
+    public function getById(Uuid $id): ?Event
+    {
+        return $this->event_repository->getById($id);
     }
 }

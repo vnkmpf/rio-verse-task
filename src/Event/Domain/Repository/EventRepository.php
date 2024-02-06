@@ -13,5 +13,5 @@ interface EventRepository
 
     public function store(Event $event): Event;
 
-    public function deleteById(Uuid $id): void;
+    public function delete(Event $event): void;
 }

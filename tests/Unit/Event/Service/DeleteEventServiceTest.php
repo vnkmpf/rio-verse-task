@@ -23,7 +23,7 @@ final class DeleteEventServiceTest extends TestCase
         $service = new EventService($repository, $this->createMock(TimeProvider::class));
 
         $service->store($event);
-        $service->delete($event->id);
+        $service->delete($event);
 
         static::assertCount(0, $repository->data);
     }
@@ -45,9 +45,9 @@ final class DeleteEventServiceTest extends TestCase
                 return $event;
             }
 
-            #[\Override] public function deleteById(Uuid $id): void
+            #[\Override] public function delete(Event $event): void
             {
-                unset($this->data[$id->toRfc4122()]);
+                unset($this->data[$event->id->toRfc4122()]);
             }
         };
     }

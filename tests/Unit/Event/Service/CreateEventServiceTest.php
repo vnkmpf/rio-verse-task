@@ -59,7 +59,7 @@ final class CreateEventServiceTest extends TestCase
                 return $event;
             }
 
-            #[\Override] public function deleteById(Uuid $id): void
+            #[\Override] public function delete(Event $event): void
             {
                 throw new \RuntimeException('Method not implemented');
             }

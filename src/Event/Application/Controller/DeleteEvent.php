@@ -8,6 +8,7 @@ use App\Event\Application\Service\EventService;
 use App\Shared\Application\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Uid\Uuid;
@@ -22,7 +23,13 @@ final class DeleteEvent extends AbstractController
 
     public function __invoke(Uuid $id): Response
     {
-        $this->event_service->delete($id);
+        $event = $this->event_service->getById($id);
+
+        if ($event === null) {
+            throw new NotFoundHttpException();
+        }
+
+        $this->event_service->delete($event);
         return new JsonResponse(status: 204);
     }
 }

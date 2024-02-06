@@ -35,11 +35,9 @@ final class EventRepository extends ServiceEntityRepository implements \App\Even
     }
 
     #[\Override]
-    public function deleteById(Uuid $id): void
+    public function delete(Event $event): void
     {
-        $this->getEntityManager()->remove(
-            $this->find($id),
-        );
+        $this->getEntityManager()->remove($event);
         $this->getEntityManager()->flush();
     }
 }
