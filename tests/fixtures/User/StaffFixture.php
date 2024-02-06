@@ -12,28 +12,28 @@ use Symfony\Component\Uid\UuidV7;
 
 final class StaffFixture extends Fixture implements FixtureGroupInterface
 {
-    public const string STAFF_UUID = '018d7583-7f63-7cd1-9858-0d50293544ef';
+    public const string ALICE_UUID = '018d7583-0000-7000-b000-f001f0000001';
 
-    public const string STAFF_DELETER_UUID = '018d7fee-64c1-7fd7-941e-671bb3d0dda2';
+    public const string BOB_DELETER_UUID = '018d7fee-0001-7000-9000-f001f0000002';
 
-    public const string STAFF_TOKEN = '0123456789abcdef0123456789abcdef';
+    public const string ALICE_TOKEN = '0123456789abcdef0123456789abcdef';
 
-    public const string STAFF_DELETER_TOKEN = 'deleter-deleter-deleter';
+    public const string BOB_DELETER_TOKEN = 'deleter-deleter-deleter';
 
     #[\Override]
     public function load(ObjectManager $manager)
     {
         $manager->persist(new User(
-            new UuidV7(static::STAFF_UUID),
+            new UuidV7(static::ALICE_UUID),
             'Alice Doe',
             'alice@example.com',
-            static::STAFF_TOKEN,
+            static::ALICE_TOKEN,
         ));
         $manager->persist(new User(
-            new UuidV7(static::STAFF_DELETER_UUID),
+            new UuidV7(static::BOB_DELETER_UUID),
             'Bob The Deleter',
             'bob@example.com',
-            static::STAFF_DELETER_TOKEN,
+            static::BOB_DELETER_TOKEN,
         ));
         $manager->flush();
     }

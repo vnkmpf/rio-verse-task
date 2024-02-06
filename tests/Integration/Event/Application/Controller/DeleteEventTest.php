@@ -13,9 +13,9 @@ final class DeleteEventTest extends WebTestCase
     public function testCanDeleteEvent(): void
     {
         $client = static::createClient(server: [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::STAFF_DELETER_TOKEN,
+            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::BOB_DELETER_TOKEN,
         ]);
-        $client->request('DELETE', '/event/' . EventFixture::EVENT_TO_DELETE_UUID);
+        $client->request('DELETE', '/event/' . EventFixture::BOBS_EVENT_TO_DELETE_UUID);
         $response = $client->getResponse();
 
         static::assertSame(204, $response->getStatusCode());
@@ -24,7 +24,7 @@ final class DeleteEventTest extends WebTestCase
     public function testCannotDeleteNonExistingEvent(): void
     {
         $client = static::createClient(server: [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::STAFF_TOKEN,
+            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::ALICE_TOKEN,
         ]);
         $client->request('DELETE', '/event/018d7f65-35ae-75bf-882f-d005d29fc02c');
         $response = $client->getResponse();
@@ -42,9 +42,9 @@ final class DeleteEventTest extends WebTestCase
     public function testCannotDeleteEventThatIsNotMine(): void
     {
         $client = static::createClient(server: [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::STAFF_TOKEN,
+            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::BOB_DELETER_TOKEN,
         ]);
-        $client->request('DELETE', '/event/' . EventFixture::SOMEONE_ELSES_EVENT_TO_DELETE_UUID);
+        $client->request('DELETE', '/event/' . EventFixture::ALICES_EVENT_TO_DELETE_UUID);
         $response = $client->getResponse();
 
         static::assertSame(404, $response->getStatusCode());

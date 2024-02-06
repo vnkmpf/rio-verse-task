@@ -12,9 +12,9 @@ final class CreateEventTest extends WebTestCase
 {
     public function testCanCreateEvent(): void
     {
-        $service_uuid = ServiceFixture::SERVICE_UUID;
+        $service_uuid = ServiceFixture::SPANISH_101_UUID;
         $client = static::createClient(server: [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::STAFF_TOKEN,
+            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::ALICE_TOKEN,
         ]);
         $client->request('POST', '/events', content: <<< JSON
             {
@@ -40,7 +40,7 @@ final class CreateEventTest extends WebTestCase
     public function testTryingToCreateEventWithoutData(): void
     {
         $client = static::createClient(server: [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::STAFF_TOKEN,
+            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::ALICE_TOKEN,
         ]);
         $client->request('POST', '/events');
         $response = $client->getResponse();
@@ -52,7 +52,7 @@ final class CreateEventTest extends WebTestCase
     public function testTryingToCreateEventWithMissingData(): void
     {
         $client = static::createClient(server: [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::STAFF_TOKEN,
+            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::ALICE_TOKEN,
         ]);
         $client->request('POST', '/events', content: <<< JSON
             {
@@ -71,9 +71,9 @@ final class CreateEventTest extends WebTestCase
 
     public function testInvalidDataConstraint(): void
     {
-        $service_uuid = ServiceFixture::SERVICE_UUID;
+        $service_uuid = ServiceFixture::SPANISH_101_UUID;
         $client = static::createClient(server: [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::STAFF_TOKEN,
+            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::ALICE_TOKEN,
         ]);
         $client->request('POST', '/events', content: <<< JSON
             {

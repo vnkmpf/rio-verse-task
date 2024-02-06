@@ -22,7 +22,7 @@ final class MultiOperationTest extends WebTestCase
             }
             JSON,
             server: [
-                'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::STAFF_TOKEN,
+                'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::ALICE_TOKEN,
             ],
         );
 
@@ -35,7 +35,7 @@ final class MultiOperationTest extends WebTestCase
         )->id;
 
         $client->request('GET', '/service/' . $created_uuid, server: [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::STAFF_TOKEN,
+            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::ALICE_TOKEN,
         ]);
         $response = $client->getResponse();
 

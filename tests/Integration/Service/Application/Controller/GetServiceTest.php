@@ -13,9 +13,9 @@ final class GetServiceTest extends WebTestCase
     public function testGetService(): void
     {
         $client = static::createClient(server: [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::STAFF_TOKEN,
+            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::ALICE_TOKEN,
         ]);
-        $client->request('GET', '/service/' . ServiceFixture::SERVICE_UUID);
+        $client->request('GET', '/service/' . ServiceFixture::SPANISH_101_UUID);
 
         $response = $client->getResponse();
 
@@ -28,7 +28,7 @@ final class GetServiceTest extends WebTestCase
     public function testTryingToGetNonExistingService(): void
     {
         $client = static::createClient(server: [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::STAFF_TOKEN,
+            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::ALICE_TOKEN,
         ]);
         $client->request('GET', '/service/018d7500-d784-7956-bec7-b09dbf2ed679');
 

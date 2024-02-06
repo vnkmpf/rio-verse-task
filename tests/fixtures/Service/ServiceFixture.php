@@ -13,26 +13,35 @@ use Symfony\Component\Uid\UuidV7;
 
 class ServiceFixture extends Fixture implements FixtureGroupInterface
 {
-    public const string SERVICE_UUID = '018d7495-e0b0-7874-af29-6d869936f6c8';
+    public const string SPANISH_101_UUID = '018d7495-0000-7000-a000-f002f0000001';
 
-    public const string USER_UUID = StaffFixture::STAFF_DELETER_UUID;
+    public const string GEOLOGY_BASISC_UUID = '018d7495-0000-7000-b000-f002f0000002';
 
     public function load(ObjectManager $manager): void
     {
         $manager->persist(static::getHardCodedService());
+        $manager->persist(new Service(
+            new UuidV7(static::GEOLOGY_BASISC_UUID),
+            'Geology Basics',
+            120,
+            5,
+            'Geology terminology',
+            1440,
+            new UuidV7(StaffFixture::BOB_DELETER_UUID),
+        ));
         $manager->flush();
     }
 
     public static function getHardCodedService(): Service
     {
         return new Service(
-            new UuidV7(static::SERVICE_UUID),
+            new UuidV7(static::SPANISH_101_UUID),
             'Spanish 101',
             60,
             10,
             'Spanish language introduction',
             1440,
-            new UuidV7(static::USER_UUID),
+            new UuidV7(StaffFixture::ALICE_UUID),
         );
     }
 

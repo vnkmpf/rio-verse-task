@@ -12,7 +12,7 @@ final class CreateServiceTest extends WebTestCase
     public function testCanCreateService(): void
     {
         $client = static::createClient(server: [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::STAFF_TOKEN,
+            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::ALICE_TOKEN,
         ]);
         $client->request('POST', '/services', content: <<< JSON
             {
@@ -39,7 +39,7 @@ final class CreateServiceTest extends WebTestCase
     public function testNonJsonDataSent(): void
     {
         $client = static::createClient(server: [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::STAFF_TOKEN,
+            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::ALICE_TOKEN,
         ]);
         $client->request('POST', '/services', content: <<< TEXT
             not-json-data
@@ -57,7 +57,7 @@ final class CreateServiceTest extends WebTestCase
     public function testMissingRequiredData(): void
     {
         $client = static::createClient(server: [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::STAFF_TOKEN,
+            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::ALICE_TOKEN,
         ]);
         $client->request('POST', '/services', content: <<< JSON
             {
@@ -80,7 +80,7 @@ final class CreateServiceTest extends WebTestCase
     public function testDataConstraintsReturnBadData(): void
     {
         $client = static::createClient(server: [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::STAFF_TOKEN,
+            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::ALICE_TOKEN,
         ]);
         $client->request('POST', '/services', content: <<< JSON
             {
@@ -104,7 +104,7 @@ final class CreateServiceTest extends WebTestCase
     public function testServiceIsCreatedWithMyUuidAsStaffId(): void
     {
         $client = static::createClient([], [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::STAFF_TOKEN,
+            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::ALICE_TOKEN,
         ]);
         $client->request('POST', '/services', content: <<< JSON
             {
@@ -120,7 +120,7 @@ final class CreateServiceTest extends WebTestCase
         $response = $client->getResponse();
         $response_data = json_decode($response->getContent(), false, 512, JSON_THROW_ON_ERROR);
 
-        static::assertSame(StaffFixture::STAFF_UUID, $response_data->staff);
+        static::assertSame(StaffFixture::ALICE_UUID, $response_data->staff);
     }
 
     public function testUnauthorizedRequestErrs(): void
