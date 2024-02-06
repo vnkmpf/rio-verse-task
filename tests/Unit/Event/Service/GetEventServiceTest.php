@@ -9,51 +9,24 @@ use App\Event\Domain\Entity\Event;
 use App\Event\Domain\EventStatus;
 use App\Event\Domain\Repository\EventRepository;
 use App\Shared\DataType\DateImmutable;
-use App\Shared\Infrastructure\SystemTimeProvider;
 use App\Shared\Infrastructure\TimeProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Uid\UuidV7;
 
-final class CreateEventServiceTest extends TestCase
+final class GetEventServiceTest extends TestCase
 {
-    public function testStoreEvent(): void
+    public function testRetrievesEventById(): void
     {
-        $event = $this->getEvent();
-        $repository = $this->getRepository();
-        $service = new EventService($repository, new SystemTimeProvider());
-
-        $service->store($event);
-
-        static::assertNotEmpty($repository->data);
-    }
-
-    public function testCannotStoreInThePast(): void
-    {
-        $time_provider = $this->createStub(TimeProvider::class);
-        $time_provider->method('now')->willReturn(
-            new \DateTimeImmutable('2000-01-01'),
-        );
         $event = $this->getEvent('1999-12-31');
         $repository = $this->getRepository();
-        $service = new EventService($repository, $time_provider);
-
-        $this->expectException(\InvalidArgumentException::class);
-        $service->store($event);
-    }
-
-    public function testCanStoreToday(): void
-    {
-        $time_provider = $this->createStub(TimeProvider::class);
-        $time_provider->method('now')->willReturn(
-            new \DateTimeImmutable('2000-01-01'),
-        );
-        $event = $this->getEvent('2000-01-01');
-        $repository = $this->getRepository();
-        $service = new EventService($repository, $time_provider);
+        $service = new EventService($repository, $this->createMock(TimeProvider::class));
 
         $service->store($event);
-        static::assertNotEmpty($repository->data);
+        $service->store($this->getEvent('1999-12-31')); // store another
+        $retrieved_event = $service->getById($event->id);
+
+        static::assertEquals($event, $retrieved_event);
     }
 
     private function getRepository(): EventRepository
@@ -75,7 +48,7 @@ final class CreateEventServiceTest extends TestCase
 
             #[\Override] public function delete(Event $event): void
             {
-                throw new \RuntimeException('Method not implemented');
+                unset($this->data[$event->id->toRfc4122()]);
             }
         };
     }

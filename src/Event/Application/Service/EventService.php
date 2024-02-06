@@ -20,7 +20,7 @@ final class EventService
 
     public function store(Event $event): Event
     {
-        if (((string) $event->date) < $this->time_provider->now()->format('Y-m-d')) {
+        if ($event->date < $this->time_provider->now()->format('Y-m-d')) {
             throw new \InvalidArgumentException('Cannot create event in the past.');
         }
 

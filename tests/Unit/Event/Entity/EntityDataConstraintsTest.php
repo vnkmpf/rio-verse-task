@@ -7,6 +7,7 @@ namespace App\Tests\Unit\Event\Entity;
 use App\Event\Domain\Entity\Event;
 use App\Event\Domain\EventStatus;
 use App\Shared\DataType\DateImmutable;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\UuidV7;
 
@@ -18,6 +19,19 @@ final class EntityDataConstraintsTest extends TestCase
         new Event(
             new UuidV7(),
             -1,
+            600,
+            new DateImmutable('2020-01-31'),
+            new UuidV7(),
+            EventStatus::ACTIVE,
+        );
+    }
+
+    #[DoesNotPerformAssertions]
+    public function testStartCanBeAt00_00(): void
+    {
+        new Event(
+            new UuidV7(),
+            0,
             600,
             new DateImmutable('2020-01-31'),
             new UuidV7(),
@@ -51,13 +65,28 @@ final class EntityDataConstraintsTest extends TestCase
         );
     }
 
-    public function testStartCannotBeOutsideCurrentDay(): void
+    public function testStartCannotBeAt00_00NextDay(): void
     {
         $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Start cannot be outside current date');
         new Event(
             new UuidV7(),
             24 * 60,
             24 * 60 + 1,
+            new DateImmutable('2020-01-31'),
+            new UuidV7(),
+            EventStatus::ACTIVE,
+        );
+    }
+
+    public function testStartCannotBeAfterTheNextMidnight(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Start cannot be outside current date');
+        new Event(
+            new UuidV7(),
+            24 * 60 + 1,
+            24 * 60 + 2,
             new DateImmutable('2020-01-31'),
             new UuidV7(),
             EventStatus::ACTIVE,
