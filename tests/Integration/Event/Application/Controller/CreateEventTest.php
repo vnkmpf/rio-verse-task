@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Event\Application\Controller;
 
+use App\Tests\Integration\ApiTestCase;
 use DataFixtures\Service\ServiceFixture;
 use DataFixtures\User\StaffFixture;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpFoundation\Response;
 
-final class CreateEventTest extends WebTestCase
+final class CreateEventTest extends ApiTestCase
 {
-    private \Symfony\Bundle\FrameworkBundle\KernelBrowser $client;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -106,45 +103,5 @@ final class CreateEventTest extends WebTestCase
         );
 
         static::assertStatusCode(404, $response);
-    }
-
-    /**
-     * @param array<string, string> $headers
-     */
-    private function callApi(
-        ?string $content = '',
-        array $headers = [],
-    ): Response
-    {
-        $this->client->request('POST', '/events', content: $content, server: $headers);
-        return $this->client->getResponse();
-    }
-
-
-
-    private static function assertUuid(string $var): void
-    {
-        static::assertMatchesRegularExpression(
-            '#^[\\da-f]{8}-[\\da-f]{4}-[\\da-f]{4}-[\\da-f]{4}-[\\da-f]{12}$#i',
-            $var,
-            "Failed asserting that {$var} is a UUID",
-        );
-    }
-
-    private static function assertStatusCode(int $status, Response $response): void
-    {
-        static::assertSame(
-            $status,
-            $response->getStatusCode(),
-            "Failed asserting that status code is {$status}",
-        );
-    }
-
-    /**
-     * @throws \JsonException
-     */
-    private function getResponseObject(Response $response): object
-    {
-        return (object) json_decode($response->getContent(), false, 512, JSON_THROW_ON_ERROR);
     }
 }
