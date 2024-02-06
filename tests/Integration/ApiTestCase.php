@@ -47,6 +47,23 @@ abstract class ApiTestCase extends WebTestCase
         return $this->client->getResponse();
     }
 
+    /**
+     * @param array<string, string> $headers
+     */
+    protected function get(
+        string $url,
+        string $auth_token = '',
+        array $headers = [],
+    ): Response
+    {
+        if ($auth_token !== '') {
+            $headers['HTTP_AUTHORIZATION'] = 'token ' . $auth_token;
+        }
+
+        $this->client->request('GET', $url, server: $headers);
+        return $this->client->getResponse();
+    }
+
     protected static function assertUuid(string $var): void
     {
         static::assertMatchesRegularExpression(
