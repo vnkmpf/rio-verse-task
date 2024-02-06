@@ -23,7 +23,7 @@ final class DeleteEventServiceTest extends TestCase
         $service = new EventService($repository, $this->createMock(TimeProvider::class));
 
         $service->store($event);
-        $service->delete($event);
+        $service->deleteById($event->id);
 
         static::assertCount(0, $repository->data);
     }

@@ -10,14 +10,6 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class GetServiceTest extends WebTestCase
 {
-    public static function setUpBeforeClass(): void
-    {
-        shell_exec(sprintf(
-            'php "%s/../../../../../bin/console" doctrine:fixtures:load --env test --no-interaction --append --group=ServiceFixture',
-            __DIR__,
-        ));
-    }
-
     public function testGetService(): void
     {
         $client = static::createClient(server: [

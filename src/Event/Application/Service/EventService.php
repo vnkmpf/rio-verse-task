@@ -6,6 +6,7 @@ namespace App\Event\Application\Service;
 
 use App\Event\Domain\Entity\Event;
 use App\Event\Domain\Repository\EventRepository;
+use App\Shared\Infrastructure\Repository\EntityNotFoundException;
 use App\Shared\Infrastructure\TimeProvider;
 use Symfony\Component\Uid\Uuid;
 
@@ -26,8 +27,9 @@ final class EventService
         return $this->event_repository->store($event);
     }
 
-    public function delete(Event $event): void
+    public function deleteById(Uuid $id): void
     {
+        $event = $this->getById($id) ?? throw new EntityNotFoundException();
         $this->event_repository->delete($event);
     }
 

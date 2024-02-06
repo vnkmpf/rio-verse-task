@@ -51,9 +51,9 @@ final class MultiOperationTest extends WebTestCase
 
     public function testEventIsDeleted(): void
     {
-        $service_uuid = new UuidV7();
+        $service_uuid = ServiceFixture::SERVICE_UUID;
         $client = static::createClient(server: [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::STAFF_TOKEN,
+            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::STAFF_DELETER_TOKEN,
         ]);
 
         $client->request('POST', '/events', content: <<< JSON
