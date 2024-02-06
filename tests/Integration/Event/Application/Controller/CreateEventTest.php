@@ -22,7 +22,7 @@ final class CreateEventTest extends ApiTestCase
     public function testCanCreateEvent(): void
     {
         $service_uuid = ServiceFixture::SPANISH_101_UUID;
-        $response = $this->callApi(<<< JSON
+        $response = $this->post('/events', <<< JSON
             {
                 "start": 480,
                 "end": 540,
@@ -44,13 +44,13 @@ final class CreateEventTest extends ApiTestCase
 
     public function testTryingToCreateEventWithoutData(): void
     {
-        $response = $this->callApi();
+        $response = $this->post('/events');
         static::assertStatusCode(400, $response);
     }
 
     public function testTryingToCreateEventWithMissingData(): void
     {
-        $response = $this->callApi(<<< JSON
+        $response = $this->post('/events', <<< JSON
             {
                 "start": 480,
                 "end": 540,
@@ -67,7 +67,7 @@ final class CreateEventTest extends ApiTestCase
     public function testInvalidDataConstraint(): void
     {
         $service_uuid = ServiceFixture::SPANISH_101_UUID;
-        $response = $this->callApi(<<< JSON
+        $response = $this->post('/events', <<< JSON
             {
                 "start": -480,
                 "end": 540,
@@ -92,7 +92,7 @@ final class CreateEventTest extends ApiTestCase
     public function testCannotCreateEventForSomeoneElsesService(): void
     {
         $service_uuid = ServiceFixture::GEOLOGY_BASISC_UUID;
-        $response = $this->callApi(<<< JSON
+        $response = $this->post('/events', <<< JSON
             {
                 "start": 480,
                 "end": 540,

@@ -4,32 +4,37 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Event\Application\Controller;
 
+use App\Tests\Integration\ApiTestCase;
 use DataFixtures\Event\EventFixture;
 use DataFixtures\User\StaffFixture;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-final class DeleteEventTest extends WebTestCase
+final class DeleteEventTest extends ApiTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->client = static::createClient();
+    }
+
     public function testCanDeleteEvent(): void
     {
-        $client = static::createClient(server: [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::BOB_DELETER_TOKEN,
-        ]);
-        $client->request('DELETE', '/event/' . EventFixture::BOBS_EVENT_TO_DELETE_UUID);
-        $response = $client->getResponse();
+        $response = $this->delete(
+            '/event/' . EventFixture::BOBS_EVENT_TO_DELETE_UUID,
+            auth_token: StaffFixture::BOB_DELETER_TOKEN,
+        );
 
-        static::assertSame(204, $response->getStatusCode());
+        static::assertStatusCode(204, $response);
     }
 
     public function testCannotDeleteNonExistingEvent(): void
     {
-        $client = static::createClient(server: [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::ALICE_TOKEN,
-        ]);
-        $client->request('DELETE', '/event/018d7f65-35ae-75bf-882f-d005d29fc02c');
-        $response = $client->getResponse();
+        $response = $this->delete(
+            '/event/018d7f65-35ae-75bf-882f-d005d29fc02c',
+            auth_token: StaffFixture::ALICE_TOKEN,
+        );
 
-        static::assertSame(404, $response->getStatusCode());
+        static::assertStatusCode(404, $response);
     }
 
     /**
@@ -41,12 +46,11 @@ final class DeleteEventTest extends WebTestCase
      */
     public function testCannotDeleteEventThatIsNotMine(): void
     {
-        $client = static::createClient(server: [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::BOB_DELETER_TOKEN,
-        ]);
-        $client->request('DELETE', '/event/' . EventFixture::ALICES_EVENT_TO_DELETE_UUID);
-        $response = $client->getResponse();
+        $response = $this->delete(
+            '/event/' . EventFixture::ALICES_EVENT_TO_DELETE_UUID,
+            auth_token: StaffFixture::BOB_DELETER_TOKEN,
+        );
 
-        static::assertSame(404, $response->getStatusCode());
+        static::assertStatusCode(404, $response);
     }
 }

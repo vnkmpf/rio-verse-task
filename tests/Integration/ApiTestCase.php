@@ -14,12 +14,36 @@ abstract class ApiTestCase extends WebTestCase
     /**
      * @param array<string, string> $headers
      */
-    protected function callApi(
-        ?string $content = '',
+    protected function post(
+        string $url,
+        ?string $content = null,
+        string $auth_token = '',
         array $headers = [],
     ): Response
     {
-        $this->client->request('POST', '/events', content: $content, server: $headers);
+        if ($auth_token !== '') {
+            $headers['HTTP_AUTHORIZATION'] = 'token ' . $auth_token;
+        }
+
+        $this->client->request('POST', $url, content: $content, server: $headers);
+        return $this->client->getResponse();
+    }
+
+    /**
+     * @param array<string, string> $headers
+     */
+    protected function delete(
+        string $url,
+        ?string $content = null,
+        string $auth_token = '',
+        array $headers = [],
+    ): Response
+    {
+        if ($auth_token !== '') {
+            $headers['HTTP_AUTHORIZATION'] = 'token ' . $auth_token;
+        }
+
+        $this->client->request('DELETE', $url, content: $content, server: $headers);
         return $this->client->getResponse();
     }
 
