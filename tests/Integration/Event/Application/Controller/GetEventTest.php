@@ -10,14 +10,6 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class GetEventTest extends WebTestCase
 {
-    public static function setUpBeforeClass(): void
-    {
-        shell_exec(sprintf(
-            'php "%s/../../../../../bin/console" doctrine:fixtures:load --env test --no-interaction --append --group=EventFixture',
-            __DIR__,
-        ));
-    }
-
     public function testCanGetEvent(): void
     {
         $client = static::createClient(server: [

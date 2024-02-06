@@ -7,6 +7,7 @@ namespace App\Tests\Integration\Event\Application\Controller;
 use DataFixtures\Service\ServiceFixture;
 use DataFixtures\User\StaffFixture;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Uid\UuidV7;
 
 final class MultiOperationTest extends WebTestCase
 {
@@ -46,5 +47,30 @@ final class MultiOperationTest extends WebTestCase
         static::assertSame(540, $created_service->end);
         static::assertSame('2100-12-31', $created_service->date);
         static::assertSame($service_uuid, $created_service->service_id);
+    }
+
+    public function testEventIsDeleted(): void
+    {
+        $service_uuid = new UuidV7();
+        $client = static::createClient(server: [
+            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::STAFF_TOKEN,
+        ]);
+
+        $client->request('POST', '/events', content: <<< JSON
+            {
+                "start": 960,
+                "end": 1000,
+                "date": "2100-12-31",
+                "service_id": "{$service_uuid}"
+            }
+            JSON,
+        );
+        $uuid = json_decode($client->getResponse()->getContent(), false, 512, JSON_THROW_ON_ERROR)->id;
+
+        $client->request('DELETE', '/event/' . $uuid);
+        $client->request('GET', '/event/' . $uuid);
+        $response = $client->getResponse();
+
+        static::assertSame(404, $response->getStatusCode());
     }
 }
