@@ -4,18 +4,23 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Event\Application\Controller;
 
+use App\Tests\Integration\ApiTestCase;
 use DataFixtures\Service\ServiceFixture;
 use DataFixtures\User\StaffFixture;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\Uid\UuidV7;
 
-final class MultiOperationTest extends WebTestCase
+final class MultiOperationTest extends ApiTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->client = static::createClient();
+    }
+
     public function testCreatedEventCanBeRetrieved(): void
     {
         $service_uuid = ServiceFixture::SPANISH_101_UUID;
-        $client = static::createClient();
-        $client->request('POST', '/events', content: <<< JSON
+        $post_response = $this->post('/events', auth_token: StaffFixture::ALICE_TOKEN, content: <<< JSON
             {
                 "start": 480,
                 "end": 540,
@@ -23,26 +28,13 @@ final class MultiOperationTest extends WebTestCase
                 "service_id": "{$service_uuid}"
             }
             JSON,
-            server: [
-                'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::ALICE_TOKEN,
-            ],
         );
+        $created_uuid = $this->getResponseObject($post_response)->id;
 
-        $post_response = $client->getResponse();
-        $created_uuid = json_decode(
-            $post_response->getContent(),
-            false,
-            512,
-            JSON_THROW_ON_ERROR,
-        )->id;
+        $response = $this->get('/event/' . $created_uuid, auth_token: StaffFixture::ALICE_TOKEN);
+        $created_service = $this->getResponseObject($response);
 
-        $client->request('GET', '/event/' . $created_uuid, server: [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::ALICE_TOKEN,
-        ]);
-        $response = $client->getResponse();
-        $created_service = json_decode($response->getContent(), false, 512, JSON_THROW_ON_ERROR);
-
-        static::assertSame(200, $response->getStatusCode());
+        static::assertStatusCode(200, $response);
         static::assertSame(480, $created_service->start);
         static::assertSame(540, $created_service->end);
         static::assertSame('2100-12-31', $created_service->date);
@@ -52,11 +44,8 @@ final class MultiOperationTest extends WebTestCase
     public function testEventIsDeleted(): void
     {
         $service_uuid = ServiceFixture::GEOLOGY_BASISC_UUID;
-        $client = static::createClient(server: [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::BOB_DELETER_TOKEN,
-        ]);
 
-        $client->request('POST', '/events', content: <<< JSON
+        $post_response = $this->post('/events', auth_token: StaffFixture::BOB_DELETER_TOKEN, content: <<< JSON
             {
                 "start": 960,
                 "end": 1000,
@@ -65,12 +54,11 @@ final class MultiOperationTest extends WebTestCase
             }
             JSON,
         );
-        $uuid = json_decode($client->getResponse()->getContent(), false, 512, JSON_THROW_ON_ERROR)->id;
+        $uuid = $this->getResponseObject($post_response)->id;
 
-        $client->request('DELETE', '/event/' . $uuid);
-        $client->request('GET', '/event/' . $uuid);
-        $response = $client->getResponse();
+        $this->delete('/event/' . $uuid, auth_token: StaffFixture::BOB_DELETER_TOKEN);
+        $response = $this->get('/event/' . $uuid, auth_token: StaffFixture::BOB_DELETER_TOKEN);
 
-        static::assertSame(404, $response->getStatusCode());
+        static::assertStatusCode(404, $response);
     }
 }
