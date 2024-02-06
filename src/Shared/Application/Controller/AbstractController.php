@@ -9,6 +9,7 @@ use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Controller\AbstractController
@@ -51,6 +52,11 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
                 'title' => 'Unauthorized request.',
                 'detail' => 'Request not authorized.',
             ], 401, ['Content-Type' => 'application/problem+json']),
+            $exception instanceof NotFoundHttpException => new JsonResponse([
+                'type' => 'https://example.com/probs/not-found',
+                'title' => 'Not found.',
+                'detail' => 'Resource not found.',
+            ], 404, ['Content-Type' => 'application/problem+json']),
             default => new JsonResponse([
                 'type' => 'https://example.com/probs/whoops',
                 'title' => 'Something went wrong.',
