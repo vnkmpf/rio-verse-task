@@ -24,4 +24,9 @@ final class EventService
 
         return $this->event_repository->store($event);
     }
+
+    public function delete(\Symfony\Component\Uid\Uuid $id): void
+    {
+        $this->event_repository->deleteById($id);
+    }
 }

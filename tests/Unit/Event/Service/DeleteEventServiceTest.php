@@ -9,37 +9,23 @@ use App\Event\Domain\Entity\Event;
 use App\Event\Domain\EventStatus;
 use App\Event\Domain\Repository\EventRepository;
 use App\Shared\DataType\DateImmutable;
-use App\Shared\Infrastructure\SystemTimeProvider;
 use App\Shared\Infrastructure\TimeProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Uid\UuidV7;
 
-final class CreateEventServiceTest extends TestCase
+final class DeleteEventServiceTest extends TestCase
 {
-    public function testStoreEvent(): void
+    public function testCanDeleteEvent(): void
     {
-        $event = $this->getEvent();
-        $repository = $this->getRepository();
-        $service = new EventService($repository, new SystemTimeProvider());
-
-        $service->store($event);
-
-        static::assertNotEmpty($repository->data);
-    }
-
-    public function testCannotStoreInThePast(): void
-    {
-        $time_provider = $this->createStub(TimeProvider::class);
-        $time_provider->method('now')->willReturn(
-            new \DateTimeImmutable('2000-01-01'),
-        );
         $event = $this->getEvent('1999-12-31');
         $repository = $this->getRepository();
-        $service = new EventService($repository, $time_provider);
+        $service = new EventService($repository, $this->createMock(TimeProvider::class));
 
-        $this->expectException(\InvalidArgumentException::class);
         $service->store($event);
+        $service->delete($event->id);
+
+        static::assertCount(0, $repository->data);
     }
 
     private function getRepository(): EventRepository
@@ -61,7 +47,7 @@ final class CreateEventServiceTest extends TestCase
 
             #[\Override] public function deleteById(Uuid $id): void
             {
-                throw new \RuntimeException('Method not implemented');
+                unset($this->data[$id->toRfc4122()]);
             }
         };
     }

@@ -33,4 +33,9 @@ final class EventRepository extends ServiceEntityRepository implements \App\Even
 
         return $event;
     }
+
+    #[\Override] public function deleteById(Uuid $id): void
+    {
+        // TODO: Implement deleteById() method.
+    }
 }
