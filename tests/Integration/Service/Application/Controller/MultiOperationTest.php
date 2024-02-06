@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Service\Application\Controller;
 
+use App\Tests\Integration\ApiTestCase;
 use DataFixtures\User\StaffFixture;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-final class MultiOperationTest extends WebTestCase
+final class MultiOperationTest extends ApiTestCase
 {
     public function testCreatedServiceCanBeRetrieved(): void
     {
-        $client = static::createClient();
-        $client->request('POST', '/services', content: <<< JSON
+        $this->client = static::createClient();
+        $post_response = $this->post('/services', auth_token: StaffFixture::ALICE_TOKEN, content: <<< JSON
             {
                 "cancellation_limit": 1440,
                 "capacity": 10,
@@ -21,24 +21,10 @@ final class MultiOperationTest extends WebTestCase
                 "name": "Scuba diving"
             }
             JSON,
-            server: [
-                'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::ALICE_TOKEN,
-            ],
         );
+        $created_uuid = $this->getResponseObject($post_response)->id;
+        $response = $this->get('/service/' . $created_uuid, auth_token: StaffFixture::ALICE_TOKEN);
 
-        $post_response = $client->getResponse();
-        $created_uuid = json_decode(
-            $post_response->getContent(),
-            false,
-            512,
-            JSON_THROW_ON_ERROR,
-        )->id;
-
-        $client->request('GET', '/service/' . $created_uuid, server: [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::ALICE_TOKEN,
-        ]);
-        $response = $client->getResponse();
-
-        static::assertSame(200, $response->getStatusCode());
+        static::assertStatusCode(200, $response);
     }
 }

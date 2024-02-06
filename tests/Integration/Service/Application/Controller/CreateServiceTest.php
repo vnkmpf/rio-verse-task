@@ -4,17 +4,21 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Service\Application\Controller;
 
+use App\Tests\Integration\ApiTestCase;
 use DataFixtures\User\StaffFixture;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-final class CreateServiceTest extends WebTestCase
+final class CreateServiceTest extends ApiTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->client = static::createClient();
+    }
+
     public function testCanCreateService(): void
     {
-        $client = static::createClient(server: [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::ALICE_TOKEN,
-        ]);
-        $client->request('POST', '/services', content: <<< JSON
+        $response = $this->post('/services', auth_token: StaffFixture::ALICE_TOKEN, content: <<< JSON
             {
                 "cancellation_limit": 1440,
                 "capacity": 10,
@@ -24,10 +28,9 @@ final class CreateServiceTest extends WebTestCase
             }
             JSON
         );
-        $response = $client->getResponse();
-        $created_service = json_decode($response->getContent(), false, 512, JSON_THROW_ON_ERROR);
+        $created_service = $this->getResponseObject($response);
 
-        static::assertSame(201, $response->getStatusCode());
+        static::assertStatusCode(201, $response);
         static::assertSame(1440, $created_service->cancellation_limit);
         static::assertSame(10, $created_service->capacity);
         static::assertSame('Test', $created_service->description);
@@ -38,28 +41,17 @@ final class CreateServiceTest extends WebTestCase
 
     public function testNonJsonDataSent(): void
     {
-        $client = static::createClient(server: [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::ALICE_TOKEN,
-        ]);
-        $client->request('POST', '/services', content: <<< TEXT
-            not-json-data
-            TEXT
-        );
+        $response = $this->post('/services', content: 'not-json-data', auth_token: StaffFixture::ALICE_TOKEN);
+        $response_data = $this->getResponseObject($response);
 
-        $response = $client->getResponse();
-        $response_data = json_decode($response->getContent(), false, 512, JSON_THROW_ON_ERROR);
-
-        static::assertSame(400, $response->getStatusCode());
+        static::assertStatusCode(400, $response);
         static::assertSame('application/problem+json', $response->headers->get('Content-Type'));
         static::assertSame('Request data is not valid JSON.', $response_data->detail);
     }
 
     public function testMissingRequiredData(): void
     {
-        $client = static::createClient(server: [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::ALICE_TOKEN,
-        ]);
-        $client->request('POST', '/services', content: <<< JSON
+        $response = $this->post('/services', auth_token: StaffFixture::ALICE_TOKEN, content: <<< JSON
             {
                 "cancellation_limit": 1440,
                 "capacity": 10,
@@ -68,21 +60,16 @@ final class CreateServiceTest extends WebTestCase
             }
             JSON
         );
+        $response_data = $this->getResponseObject($response);
 
-        $response = $client->getResponse();
-        $response_data = json_decode($response->getContent(), false, 512, JSON_THROW_ON_ERROR);
-
-        static::assertSame(400, $response->getStatusCode());
+        static::assertStatusCode(400, $response);
         static::assertSame('application/problem+json', $response->headers->get('Content-Type'));
         static::assertSame('Missing data "name".', $response_data->detail);
     }
 
     public function testDataConstraintsReturnBadData(): void
     {
-        $client = static::createClient(server: [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::ALICE_TOKEN,
-        ]);
-        $client->request('POST', '/services', content: <<< JSON
+        $response = $this->post('/services', auth_token: StaffFixture::ALICE_TOKEN, content: <<< JSON
             {
                 "cancellation_limit": 1440,
                 "capacity": -10,
@@ -92,21 +79,16 @@ final class CreateServiceTest extends WebTestCase
             }
             JSON
         );
+        $response_data = $this->getResponseObject($response);
 
-        $response = $client->getResponse();
-        $response_data = json_decode($response->getContent(), false, 512, JSON_THROW_ON_ERROR);
-
-        static::assertSame(400, $response->getStatusCode());
+        static::assertStatusCode(400, $response);
         static::assertSame('application/problem+json', $response->headers->get('Content-Type'));
         static::assertSame('Capacity has to be positive', $response_data->detail);
     }
 
     public function testServiceIsCreatedWithMyUuidAsStaffId(): void
     {
-        $client = static::createClient([], [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::ALICE_TOKEN,
-        ]);
-        $client->request('POST', '/services', content: <<< JSON
+        $response = $this->post('/services', auth_token: StaffFixture::ALICE_TOKEN, content: <<< JSON
             {
                 "cancellation_limit": 1440,
                 "capacity": 10,
@@ -116,17 +98,14 @@ final class CreateServiceTest extends WebTestCase
             }
             JSON
         );
-
-        $response = $client->getResponse();
-        $response_data = json_decode($response->getContent(), false, 512, JSON_THROW_ON_ERROR);
+        $response_data = $this->getResponseObject($response);
 
         static::assertSame(StaffFixture::ALICE_UUID, $response_data->staff);
     }
 
     public function testUnauthorizedRequestErrs(): void
     {
-        $client = static::createClient();
-        $client->request('POST', '/services', content: <<< JSON
+        $response = $this->post('/services', content: <<< JSON
             {
                 "cancellation_limit": 1440,
                 "capacity": 10,
@@ -136,19 +115,16 @@ final class CreateServiceTest extends WebTestCase
             }
             JSON
         );
+        $response_data = $this->getResponseObject($response);
 
-        $response = $client->getResponse();
-        $response_data = json_decode($response->getContent(), false, 512, JSON_THROW_ON_ERROR);
-
-        static::assertSame(401, $response->getStatusCode());
+        static::assertStatusCode(401, $response);
         static::assertSame('application/problem+json', $response->headers->get('Content-Type'));
         static::assertSame('Request not authorized.', $response_data->detail);
     }
 
     public function testUserWithTokenDoesNotExist(): void
     {
-        $client = static::createClient();
-        $client->request('POST', '/services', content: <<< JSON
+        $response = $this->post('/services', auth_token: '0000000000000000', content: <<< JSON
             {
                 "cancellation_limit": 1440,
                 "capacity": 10,
@@ -156,25 +132,12 @@ final class CreateServiceTest extends WebTestCase
                 "duration": 60,
                 "name": "Scuba diving"
             }
-            JSON, server: [
-                'HTTP_AUTHORIZATION' => 'token 0000000000000000',
-            ],
+            JSON,
         );
+        $response_data = $this->getResponseObject($response);
 
-        $response = $client->getResponse();
-        $response_data = json_decode($response->getContent(), false, 512, JSON_THROW_ON_ERROR);
-
-        static::assertSame(401, $response->getStatusCode());
+        static::assertStatusCode(401, $response);
         static::assertSame('application/problem+json', $response->headers->get('Content-Type'));
         static::assertSame('Request not authorized.', $response_data->detail);
-    }
-
-    private static function assertUuid(string $var): void
-    {
-        static::assertMatchesRegularExpression(
-            '#^[\\da-f]{8}-[\\da-f]{4}-[\\da-f]{4}-[\\da-f]{4}-[\\da-f]{12}$#i',
-            $var,
-            "Failed asserting that {$var} is a UUID",
-        );
     }
 }

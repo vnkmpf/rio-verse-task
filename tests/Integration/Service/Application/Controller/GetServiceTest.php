@@ -4,20 +4,24 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Service\Application\Controller;
 
+use App\Tests\Integration\ApiTestCase;
 use DataFixtures\Service\ServiceFixture;
 use DataFixtures\User\StaffFixture;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-final class GetServiceTest extends WebTestCase
+final class GetServiceTest extends ApiTestCase
 {
-    public function testGetService(): void
+    protected function setUp(): void
     {
-        $client = static::createClient(server: [
+        parent::setUp();
+
+        $this->client = static::createClient(server: [
             'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::ALICE_TOKEN,
         ]);
-        $client->request('GET', '/service/' . ServiceFixture::SPANISH_101_UUID);
+    }
 
-        $response = $client->getResponse();
+    public function testGetService(): void
+    {
+        $response = $this->get('/service/' . ServiceFixture::SPANISH_101_UUID);
 
         static::assertJsonStringEqualsJsonString(
             json_encode(ServiceFixture::getHardCodedService(), JSON_THROW_ON_ERROR),
@@ -27,12 +31,7 @@ final class GetServiceTest extends WebTestCase
 
     public function testTryingToGetNonExistingService(): void
     {
-        $client = static::createClient(server: [
-            'HTTP_AUTHORIZATION' => 'token ' . StaffFixture::ALICE_TOKEN,
-        ]);
-        $client->request('GET', '/service/018d7500-d784-7956-bec7-b09dbf2ed679');
-
-        $response = $client->getResponse();
+        $response = $this->get('/service/018d7500-d784-7956-bec7-b09dbf2ed679');
 
         static::assertSame(404, $response->getStatusCode());
     }
