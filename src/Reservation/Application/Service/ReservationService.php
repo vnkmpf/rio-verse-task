@@ -11,6 +11,7 @@ use App\Reservation\Domain\Entity\Reservation;
 use App\Reservation\Domain\Exception\CannotCreateReservationException;
 use App\Reservation\Domain\Repository\ReservationRepository;
 use App\Shared\Infrastructure\Repository\EntityNotFoundException;
+use Symfony\Component\Uid\Uuid;
 
 final class ReservationService
 {
@@ -44,5 +45,18 @@ final class ReservationService
         $this->reservation_repository->store($reservation);
 
         return $reservation;
+    }
+
+    public function deleteById(Uuid $id): void
+    {
+        $this->reservation_repository->delete(
+            $this->reservation_repository->getById($id)
+                ?? throw new EntityNotFoundException("Reservation \"{$id}\" not found"),
+        );
+    }
+
+    public function getById(Uuid $id): ?Reservation
+    {
+        return $this->reservation_repository->getById($id);
     }
 }
