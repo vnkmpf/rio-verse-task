@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Reservation\Application\Controller;
 
-use App\Reservation\Domain\Entity\Reservation;
 use App\Reservation\Domain\ReservationStatus;
 use App\Tests\Integration\ApiTestCase;
 use DataFixtures\Event\EventFixture;
@@ -53,5 +52,33 @@ final class CreateReservationTest extends ApiTestCase
 
         static::assertStatusCode(400, $response);
         static::assertSame('Missing required data.', $data->title);
+    }
+
+    public function testUnauthenticatedUserCannotCreate(): void
+    {
+        $event_id = EventFixture::EVENT_UUID;
+        $response = $this->post('/reservations', content: <<< JSON
+            {
+                "event_id": "{$event_id}",
+                "description": "desc"
+            }
+            JSON,
+        );
+
+        static::assertStatusCode(401, $response);
+    }
+
+    public function testInvalidTokenAuthCannotCreate(): void
+    {
+        $event_id = EventFixture::EVENT_UUID;
+        $response = $this->post('/reservations', auth_token: '0000', content: <<< JSON
+            {
+                "event_id": "{$event_id}",
+                "description": "desc"
+            }
+            JSON,
+        );
+
+        static::assertStatusCode(401, $response);
     }
 }
