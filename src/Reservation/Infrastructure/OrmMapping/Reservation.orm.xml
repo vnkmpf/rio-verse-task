@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity repository-class="App\Reservation\Infrastructure\Repository\ReservationRepository"
+            name="App\Reservation\Domain\Entity\Reservation"
+            table="reservation">
+        <id name="id" type="uuid" column="id" />
+        <field name="user_name" type="string" column="user_name" length="128" />
+        <field name="user_email" type="string" column="user_email" length="255" />
+        <field name="user_id" type="uuid" column="user_id" nullable="true" />
+        <field name="event_id" type="uuid" column="event_id" nullable="true" />
+        <field name="description" type="text" column="description" />
+        <field name="status" type="reservation_status" column="status" />
+    </entity>
+</doctrine-mapping>

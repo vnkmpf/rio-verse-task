@@ -10,6 +10,7 @@ doctrine:
         types:
             date_immutable: App\Shared\DataType\DateImmutableDoctrine
             event_status: App\Shared\DataType\EventStatusDoctrine
+            reservation_status: App\Shared\DataType\ReservationStatusDoctrine
     orm:
         auto_generate_proxy_classes: true
         enable_lazy_ghost_objects: true
@@ -36,6 +37,12 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Event/Infrastructure/OrmMapping'
                 prefix: 'App\Event\Domain\Entity'
                 alias: Event
+            Reservation:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Reservation/Infrastructure/OrmMapping'
+                prefix: 'App\Reservation\Domain\Entity'
+                alias: Reservation
 
 when@test:
     doctrine:

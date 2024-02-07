@@ -9,6 +9,7 @@ use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
@@ -57,6 +58,11 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
                 'title' => 'Not found.',
                 'detail' => 'Resource not found.',
             ], 404, ['Content-Type' => 'application/problem+json']),
+            $exception instanceof ConflictHttpException => new JsonResponse([
+                'type' => 'https://example.com/probs/conflict',
+                'title' => 'Cannot create reservation.',
+                'detail' => 'Event is fully reserved.',
+            ], 409, ['Content-Type' => 'application/problem+json']),
             default => new JsonResponse([
                 'type' => 'https://example.com/probs/whoops',
                 'title' => 'Something went wrong.',

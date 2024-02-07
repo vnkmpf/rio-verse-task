@@ -8,6 +8,8 @@ use App\Event\Application\Service\EventService;
 use App\Event\Domain\Entity\Event;
 use App\Event\Domain\EventStatus;
 use App\Event\Domain\Repository\EventRepository;
+use App\Reservation\Domain\Repository\ReservationRepository;
+use App\Service\Domain\Repository\ServiceRepository;
 use App\Shared\DataType\DateImmutable;
 use App\Shared\Infrastructure\SystemTimeProvider;
 use App\Shared\Infrastructure\TimeProvider;
@@ -21,7 +23,12 @@ final class CreateEventServiceTest extends TestCase
     {
         $event = $this->getEvent();
         $repository = $this->getRepository();
-        $service = new EventService($repository, new SystemTimeProvider());
+        $service = new EventService(
+            $repository,
+            new SystemTimeProvider(),
+            $this->createMock(ServiceRepository::class),
+            $this->createMock(ReservationRepository::class),
+        );
 
         $service->store($event);
 
@@ -36,7 +43,12 @@ final class CreateEventServiceTest extends TestCase
         );
         $event = $this->getEvent('1999-12-31');
         $repository = $this->getRepository();
-        $service = new EventService($repository, $time_provider);
+        $service = new EventService(
+            $repository,
+            $time_provider,
+            $this->createMock(ServiceRepository::class),
+            $this->createMock(ReservationRepository::class),
+        );
 
         $this->expectException(\InvalidArgumentException::class);
         $service->store($event);
@@ -50,7 +62,12 @@ final class CreateEventServiceTest extends TestCase
         );
         $event = $this->getEvent('2000-01-01');
         $repository = $this->getRepository();
-        $service = new EventService($repository, $time_provider);
+        $service = new EventService(
+            $repository,
+            $time_provider,
+            $this->createMock(ServiceRepository::class),
+            $this->createMock(ReservationRepository::class),
+        );
 
         $service->store($event);
         static::assertNotEmpty($repository->data);

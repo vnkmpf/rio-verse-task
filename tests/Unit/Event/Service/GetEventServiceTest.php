@@ -8,6 +8,8 @@ use App\Event\Application\Service\EventService;
 use App\Event\Domain\Entity\Event;
 use App\Event\Domain\EventStatus;
 use App\Event\Domain\Repository\EventRepository;
+use App\Reservation\Domain\Repository\ReservationRepository;
+use App\Service\Domain\Repository\ServiceRepository;
 use App\Shared\DataType\DateImmutable;
 use App\Shared\Infrastructure\TimeProvider;
 use PHPUnit\Framework\TestCase;
@@ -20,7 +22,12 @@ final class GetEventServiceTest extends TestCase
     {
         $event = $this->getEvent('1999-12-31');
         $repository = $this->getRepository();
-        $service = new EventService($repository, $this->createMock(TimeProvider::class));
+        $service = new EventService(
+            $repository,
+            $this->createMock(TimeProvider::class),
+            $this->createMock(ServiceRepository::class),
+            $this->createMock(ReservationRepository::class),
+        );
 
         $service->store($event);
         $service->store($this->getEvent('1999-12-31')); // store another

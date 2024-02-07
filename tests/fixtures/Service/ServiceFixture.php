@@ -17,6 +17,8 @@ class ServiceFixture extends Fixture implements FixtureGroupInterface
 
     public const string GEOLOGY_BASISC_UUID = '018d7495-0000-7000-b000-f002f0000002';
 
+    public const string SPANISH_FULL_CAPACITY_UUID = '018d7495-0000-7000-b000-f002f0000003';
+
     public function load(ObjectManager $manager): void
     {
         $manager->persist(static::getHardCodedService());
@@ -28,6 +30,15 @@ class ServiceFixture extends Fixture implements FixtureGroupInterface
             'Geology terminology',
             1440,
             new UuidV7(StaffFixture::BOB_DELETER_UUID),
+        ));
+        $manager->persist(new Service(
+            new UuidV7(static::SPANISH_FULL_CAPACITY_UUID),
+            'Spanish - full',
+            120,
+            2,
+            'This Spanish is full',
+            1440,
+            new UuidV7(StaffFixture::ALICE_UUID),
         ));
         $manager->flush();
     }

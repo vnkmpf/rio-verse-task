@@ -21,7 +21,7 @@ final class CreateReservationTest extends ApiTestCase
 
     public function testCreateReservationForAuthenticatedUser(): void
     {
-        $event_id = EventFixture::EVENT_UUID;
+        $event_id = EventFixture::ALICES_EVENT_UUID;
         $response = $this->post('/reservations', auth_token: UserFixture::CAROL_TOKEN, content: <<< JSON
             {
                 "event_id": "{$event_id}",
@@ -57,7 +57,7 @@ final class CreateReservationTest extends ApiTestCase
 
     public function testUnauthenticatedUserCannotCreate(): void
     {
-        $event_id = EventFixture::EVENT_UUID;
+        $event_id = EventFixture::ALICES_EVENT_UUID;
         $response = $this->post('/reservations', content: <<< JSON
             {
                 "event_id": "{$event_id}",
@@ -71,7 +71,7 @@ final class CreateReservationTest extends ApiTestCase
 
     public function testInvalidTokenAuthCannotCreate(): void
     {
-        $event_id = EventFixture::EVENT_UUID;
+        $event_id = EventFixture::ALICES_EVENT_UUID;
         $response = $this->post('/reservations', auth_token: '0000', content: <<< JSON
             {
                 "event_id": "{$event_id}",
@@ -85,7 +85,7 @@ final class CreateReservationTest extends ApiTestCase
 
     public function testStaffCanCreateReservationForNonExistingUser(): void
     {
-        $event_id = EventFixture::EVENT_UUID;
+        $event_id = EventFixture::ALICES_EVENT_UUID;
         $response = $this->post('/reservations', auth_token: StaffFixture::ALICE_TOKEN, content: <<< JSON
             {
                 "user_email": "charlie@example.com",
@@ -105,5 +105,46 @@ final class CreateReservationTest extends ApiTestCase
         static::assertSame('charlie@example.com', $data->user_email);
         static::assertSame('desc', $data->description);
         static::assertSame(ReservationStatus::PENDING->value, $data->status);
+    }
+
+    public function testCreatingStaffReservationForSomeoneElsesEventBooksYouAsStandardUser(): void
+    {
+        $event_id = EventFixture::BOBS_EVENT_UUID;
+        $response = $this->post('/reservations', auth_token: StaffFixture::ALICE_TOKEN, content: <<< JSON
+            {
+                "user_email": "charlie@example.com",
+                "user_name": "Charlie X.",
+                "event_id": "{$event_id}",
+                "description": "desc"
+            }
+            JSON,
+        );
+        $data = $this->getResponseObject($response);
+
+        static::assertStatusCode(201, $response);
+        static::assertUuid($data->id);
+        static::assertSame(StaffFixture::ALICE_UUID, $data->user_id);
+        static::assertSame($event_id, $data->event_id);
+        static::assertSame('Alice Doe', $data->user_name);
+        static::assertSame('alice@example.com', $data->user_email);
+        static::assertSame('desc', $data->description);
+        static::assertSame(ReservationStatus::PENDING->value, $data->status);
+    }
+
+    public function testCannotCreateReservationToAlreadyFullCapacityEvent(): void
+    {
+        $event_id = EventFixture::ALICE_FULL_CAPACITY_EVENT_UUID;
+        $response = $this->post('/reservations', auth_token: UserFixture::CAROL_TOKEN, content: <<< JSON
+            {
+                "event_id": "{$event_id}",
+                "description": "desc"
+            }
+            JSON,
+        );
+        $data = $this->getResponseObject($response);
+
+        static::assertStatusCode(409, $response);
+        static::assertSame('Cannot create reservation.', $data->title);
+        static::assertSame('Event is fully reserved.', $data->detail);
     }
 }

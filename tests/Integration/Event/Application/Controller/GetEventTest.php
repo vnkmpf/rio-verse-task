@@ -21,7 +21,7 @@ final class GetEventTest extends ApiTestCase
 
     public function testCanGetEvent(): void
     {
-        $response = $this->get('/event/' . EventFixture::EVENT_UUID);
+        $response = $this->get('/event/' . EventFixture::ALICES_EVENT_UUID);
 
         static::assertJsonStringEqualsJsonString(
             json_encode(EventFixture::getHardCodedService(), JSON_THROW_ON_ERROR),
