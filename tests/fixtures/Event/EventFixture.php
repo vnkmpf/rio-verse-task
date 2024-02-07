@@ -26,6 +26,8 @@ final class EventFixture extends Fixture implements FixtureGroupInterface
 
     public const string ALICE_FULL_CAPACITY_EVENT_UUID = '018d7aa8-0000-7a77-908e-000000000005';
 
+    public const string ALICE_CANCELED_EVENT_UUID = '018d7aa8-0000-7a77-908e-000000000006';
+
     public function load(ObjectManager $manager): void
     {
         $manager->persist(new Event(
@@ -55,6 +57,15 @@ final class EventFixture extends Fixture implements FixtureGroupInterface
             new DateImmutable('2000-01-01'),
             new UuidV7(ServiceFixture::SPANISH_FULL_CAPACITY_UUID),
             EventStatus::ACTIVE,
+            new UuidV7(StaffFixture::ALICE_UUID),
+        ));
+        $manager->persist(new Event(
+            new UuidV7(static::ALICE_CANCELED_EVENT_UUID),
+            660,
+            720,
+            new DateImmutable('2000-01-01'),
+            new UuidV7(ServiceFixture::SPANISH_101_UUID),
+            EventStatus::CANCELED,
             new UuidV7(StaffFixture::ALICE_UUID),
         ));
         $manager->flush();

@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Reservation\Application\Controller;
 
-use App\Event\Application\Service\EventService;
 use App\Event\Domain\Repository\EventRepository;
+use App\Reservation\Application\Service\ReservationService;
 use App\Reservation\Domain\Entity\Reservation;
-use App\Reservation\Domain\Repository\ReservationRepository;
 use App\Reservation\Domain\ReservationStatus;
 use App\Shared\Application\Controller\AbstractController;
 use App\User\Domain\Repository\UserRepository;
@@ -15,7 +14,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Uuid;
@@ -25,10 +23,9 @@ use Symfony\Component\Uid\UuidV7;
 final class CreateReservation extends AbstractController
 {
     public function __construct(
-        private readonly ReservationRepository $reservation_repository,
+        private readonly ReservationService $reservation_service,
         private readonly UserRepository $user_repository,
         private readonly EventRepository $event_repository,
-        private readonly EventService $event_service,
     ) {
     }
 
@@ -39,17 +36,12 @@ final class CreateReservation extends AbstractController
         try {
             $request_data = $this->decodeJsonContent($request);
             $event_id = new UuidV7($request_data->event_id ?? throw new BadRequestHttpException('event_id'));
-            $event = $this->event_repository->getById($event_id);
-
-            if ($event !== null && false === $this->event_service->canBook($event)) {
-                throw new ConflictHttpException();
-            }
-
-            $reservation = match ($event?->staff_id->toRfc4122() === $user_id->toRfc4122()) {
+            $event = $this->event_repository->getById($event_id) ?? throw new BadRequestHttpException('event_id');
+            $reservation = match ($event->staff_id->toRfc4122() === $user_id->toRfc4122()) {
                 true => $this->createStaffReservation($request_data, $event_id),
                 false => $this->createLoggedInUserReservation($request_data, $event_id, $user_id),
             };
-            $this->reservation_repository->store($reservation);
+            $this->reservation_service->tryToBook($reservation, $event);
 
             return new JsonResponse($reservation, 201);
         } catch (\Exception $e) {

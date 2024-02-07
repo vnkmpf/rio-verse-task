@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Shared\Application\Controller;
 
+use App\Reservation\Domain\Exception\CannotCreateReservationException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
@@ -58,10 +58,10 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
                 'title' => 'Not found.',
                 'detail' => 'Resource not found.',
             ], 404, ['Content-Type' => 'application/problem+json']),
-            $exception instanceof ConflictHttpException => new JsonResponse([
+            $exception instanceof CannotCreateReservationException => new JsonResponse([
                 'type' => 'https://example.com/probs/conflict',
                 'title' => 'Cannot create reservation.',
-                'detail' => 'Event is fully reserved.',
+                'detail' => $exception->getMessage(),
             ], 409, ['Content-Type' => 'application/problem+json']),
             default => new JsonResponse([
                 'type' => 'https://example.com/probs/whoops',

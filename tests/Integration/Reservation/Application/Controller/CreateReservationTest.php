@@ -147,4 +147,21 @@ final class CreateReservationTest extends ApiTestCase
         static::assertSame('Cannot create reservation.', $data->title);
         static::assertSame('Event is fully reserved.', $data->detail);
     }
+
+    public function testCannotCreateReservationForCanceledEvent(): void
+    {
+        $event_id = EventFixture::ALICE_CANCELED_EVENT_UUID;
+        $response = $this->post('/reservations', auth_token: UserFixture::CAROL_TOKEN, content: <<< JSON
+            {
+                "event_id": "{$event_id}",
+                "description": "desc"
+            }
+            JSON,
+        );
+        $data = $this->getResponseObject($response);
+
+        static::assertStatusCode(409, $response);
+        static::assertSame('Cannot create reservation.', $data->title);
+        static::assertSame('Event is canceled.', $data->detail);
+    }
 }
