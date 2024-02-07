@@ -7,6 +7,7 @@ namespace App\User\Infrastructure\Repository;
 use App\User\Domain\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<User>
@@ -22,5 +23,11 @@ final class UserRepository extends ServiceEntityRepository implements \App\User\
     public function getByToken(string $token): ?User
     {
         return $this->findOneBy(['token' => $token]);
+    }
+
+    #[\Override]
+    public function getById(Uuid $id): ?User
+    {
+        return $this->find($id);
     }
 }

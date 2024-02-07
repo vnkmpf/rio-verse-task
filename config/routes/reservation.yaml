@@ -1,0 +1,5 @@
+service:
+  resource:
+    path: ../../src/Reservation/Application/Controller
+    namespace: App\Reservation\Application\Controller
+  type: attribute
