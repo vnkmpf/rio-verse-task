@@ -33,20 +33,26 @@ final class CreateEvent extends AbstractController
 
         try {
             $post_data = $this->decodeJsonContent($request);
+            $service_id = new UuidV7($post_data->service_id ?? throw new BadRequestHttpException('service_id'));
+            $service = $this->service_repository->findById($service_id);
+
+            if ($service === null) {
+                throw new BadRequestHttpException('invalid service id');
+            }
+
+            if ($service->staff->toRfc4122() !== $user_id) {
+                throw new NotFoundHttpException();
+            }
+
             $event = new Event(
                 new UuidV7(),
                 $post_data->start ?? throw new BadRequestHttpException('start'),
                 $post_data->end ?? throw new BadRequestHttpException('end'),
                 new DateImmutable($post_data->date ?? throw new BadRequestHttpException('date')),
-                new UuidV7($post_data->service_id ?? throw new BadRequestHttpException('service_id')),
+                $service_id,
                 EventStatus::ACTIVE,
+                $service->staff,
             );
-
-            $service = $this->service_repository->findById($event->service_id);
-
-            if ($service !== null && $service->staff->toRfc4122() !== $user_id) {
-                throw new NotFoundHttpException();
-            }
 
             $this->event_service->store($event);
         } catch (\Exception $e) {

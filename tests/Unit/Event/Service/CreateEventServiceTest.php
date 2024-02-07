@@ -89,6 +89,7 @@ final class CreateEventServiceTest extends TestCase
             new DateImmutable($time),
             new UuidV7(),
             EventStatus::ACTIVE,
+            new UuidV7(),
         );
     }
 }

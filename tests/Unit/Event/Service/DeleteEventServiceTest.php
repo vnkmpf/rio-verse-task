@@ -61,6 +61,7 @@ final class DeleteEventServiceTest extends TestCase
             new DateImmutable($time),
             new UuidV7(),
             EventStatus::ACTIVE,
+            new UuidV7(),
         );
     }
 }

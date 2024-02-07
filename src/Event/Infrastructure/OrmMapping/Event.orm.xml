@@ -11,5 +11,6 @@
         <field name="date" type="date_immutable" column="date" />
         <field name="service_id" type="uuid" column="service_id" />
         <field name="status" type="event_status" column="status" />
+        <field name="staff_id" type="uuid" column="staff_id" />
     </entity>
 </doctrine-mapping>

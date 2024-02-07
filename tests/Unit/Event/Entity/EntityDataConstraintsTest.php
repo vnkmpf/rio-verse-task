@@ -23,6 +23,7 @@ final class EntityDataConstraintsTest extends TestCase
             new DateImmutable('2020-01-31'),
             new UuidV7(),
             EventStatus::ACTIVE,
+            new UuidV7(),
         );
     }
 
@@ -36,6 +37,7 @@ final class EntityDataConstraintsTest extends TestCase
             new DateImmutable('2020-01-31'),
             new UuidV7(),
             EventStatus::ACTIVE,
+            new UuidV7(),
         );
     }
 
@@ -49,6 +51,7 @@ final class EntityDataConstraintsTest extends TestCase
             new DateImmutable('2020-01-31'),
             new UuidV7(),
             EventStatus::ACTIVE,
+            new UuidV7(),
         );
     }
 
@@ -62,6 +65,7 @@ final class EntityDataConstraintsTest extends TestCase
             new DateImmutable('2020-01-31'),
             new UuidV7(),
             EventStatus::ACTIVE,
+            new UuidV7(),
         );
     }
 
@@ -76,6 +80,7 @@ final class EntityDataConstraintsTest extends TestCase
             new DateImmutable('2020-01-31'),
             new UuidV7(),
             EventStatus::ACTIVE,
+            new UuidV7(),
         );
     }
 
@@ -90,6 +95,7 @@ final class EntityDataConstraintsTest extends TestCase
             new DateImmutable('2020-01-31'),
             new UuidV7(),
             EventStatus::ACTIVE,
+            new UuidV7(),
         );
     }
 
@@ -103,6 +109,7 @@ final class EntityDataConstraintsTest extends TestCase
             new DateImmutable('2020-01-31'),
             new UuidV7(),
             EventStatus::ACTIVE,
+            new UuidV7(),
         );
     }
 }

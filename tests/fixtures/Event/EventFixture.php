@@ -8,6 +8,7 @@ use App\Event\Domain\Entity\Event;
 use App\Event\Domain\EventStatus;
 use App\Shared\DataType\DateImmutable;
 use DataFixtures\Service\ServiceFixture;
+use DataFixtures\User\StaffFixture;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -30,6 +31,7 @@ final class EventFixture extends Fixture implements FixtureGroupInterface
             new DateImmutable('2000-01-01'),
             new UuidV7(ServiceFixture::GEOLOGY_BASISC_UUID),
             EventStatus::ACTIVE,
+            new UuidV7(StaffFixture::BOB_DELETER_UUID),
         ));
         $manager->persist(static::getHardCodedService(static::ALICES_EVENT_TO_DELETE_UUID));
         $manager->persist(static::getHardCodedService(static::EVENT_UUID));
@@ -45,6 +47,7 @@ final class EventFixture extends Fixture implements FixtureGroupInterface
             new DateImmutable('2000-01-01'),
             new UuidV7(ServiceFixture::SPANISH_101_UUID),
             EventStatus::ACTIVE,
+            new UuidV7(StaffFixture::ALICE_UUID),
         );
     }
 

@@ -21,6 +21,7 @@ final class Event
         public DateImmutable $date,
         public Uuid $service_id,
         public EventStatus $status,
+        public Uuid $staff_id,
     ) {
         if ($this->start < 0) {
             throw new \InvalidArgumentException('Start cannot be negative');
