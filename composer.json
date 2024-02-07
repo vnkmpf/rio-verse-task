@@ -65,6 +65,7 @@
         "test:coverage": "TEST_SUITE=integration XDEBUG_MODE=coverage phpunit -d memory_limit=4G --coverage-html coverage --coverage-filter src",
         "test:integration": "XDEBUG_MODE=off TEST_SUITE=integration phpunit --color --testsuite integration",
         "test:unit": "XDEBUG_MODE=off phpunit --color --testsuite unit",
+        "code:style": "XDEBUG_MODE=off php-cs-fixer fix --dry-run --config=.php-cs-fixer.dist.php",
         "code:format": "XDEBUG_MODE=off php-cs-fixer fix --config=.php-cs-fixer.dist.php",
         "qa:stan": "XDEBUG_MODE=off phpstan analyze -c phpstan.dist.neon",
         "qa:mutation": "./vendor/bin/infection --show-mutations --only-covered",
