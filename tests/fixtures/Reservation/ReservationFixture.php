@@ -7,6 +7,7 @@ namespace DataFixtures\Reservation;
 use App\Reservation\Domain\Entity\Reservation;
 use App\Reservation\Domain\ReservationStatus;
 use DataFixtures\Event\EventFixture;
+use DataFixtures\User\UserFixture;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -17,6 +18,10 @@ final class ReservationFixture extends Fixture implements FixtureGroupInterface
     public const string RESERVERTION_FOR_BOB_TO_REMOVE_UUID = '00000001-0000-7000-a000-00000000dd01';
 
     public const string RESERVERTION_TO_RETRIEVE_UUID = '00000001-0000-7000-a000-000000000002';
+
+    public const string RESERVERTION_FOR_CAROL_TO_REMOVE_UUID = '00000001-0000-7000-a000-00000000dd03';
+
+    public const string BOBS_RESERVERTION_ALICE_WANTS_TO_DELETE_UUID = '00000001-0000-7000-a000-00000000dd04';
 
     #[\Override]
     public static function getGroups(): array
@@ -47,6 +52,24 @@ final class ReservationFixture extends Fixture implements FixtureGroupInterface
         ));
         $manager->persist(new Reservation(
             new UuidV7(static::RESERVERTION_FOR_BOB_TO_REMOVE_UUID),
+            'Jane Doe',
+            'jane.doe@example.com',
+            null,
+            new UuidV7(EventFixture::BOBS_EVENT_UUID),
+            '',
+            ReservationStatus::CONFIRMED,
+        ));
+        $manager->persist(new Reservation(
+            new UuidV7(static::RESERVERTION_FOR_CAROL_TO_REMOVE_UUID),
+            'Jane Doe',
+            'jane.doe@example.com',
+            new UuidV7(UserFixture::CAROL_UUID),
+            new UuidV7(EventFixture::BOBS_EVENT_UUID),
+            '',
+            ReservationStatus::CONFIRMED,
+        ));
+        $manager->persist(new Reservation(
+            new UuidV7(static::BOBS_RESERVERTION_ALICE_WANTS_TO_DELETE_UUID),
             'Jane Doe',
             'jane.doe@example.com',
             null,

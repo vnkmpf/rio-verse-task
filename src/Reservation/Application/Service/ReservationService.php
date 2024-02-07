@@ -49,10 +49,9 @@ final class ReservationService
 
     public function deleteById(Uuid $id): void
     {
-        $this->reservation_repository->delete(
-            $this->reservation_repository->getById($id)
-                ?? throw new EntityNotFoundException("Reservation \"{$id}\" not found"),
-        );
+        $reservation = $this->reservation_repository->getById($id)
+            ?? throw new EntityNotFoundException("Reservation \"{$id}\" not found");
+        $this->reservation_repository->delete($reservation);
     }
 
     public function getById(Uuid $id): ?Reservation
