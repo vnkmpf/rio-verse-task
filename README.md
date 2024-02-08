@@ -4,7 +4,8 @@
 
 ### Setup the project
 ```sh
-docker compose build
+docker compose build --no-cache
+docker compose exec php composer install
 ```
 
 ### Running the tests
